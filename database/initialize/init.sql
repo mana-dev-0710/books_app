@@ -1,0 +1,5 @@
+REVOKE USAGE ON *.* FROM `dev`@`%`;
+REVOKE ALL PRIVILEGES ON `sns-db`.* FROM `dev`@`%`;
+
+GRANT ALL PRIVILEGES ON *.* TO `dev`@`%`;
+FLUSH PRIVILEGES;
