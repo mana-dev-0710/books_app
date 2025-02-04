@@ -1,101 +1,67 @@
-import Image from "next/image";
+'use client';
 
-export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+import React, { Component } from 'react';
+import Header from "../components/layout/Header";
+import SideBar from "../components/layout/SideBar";
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
-  );
+class Home extends Component {
+  render() {
+
+    return (
+      <div className="font-[family-name:var(--font-geist-sans)]">
+        <Header/>
+        <main className="flex">
+          <div className="hidden lg:block basis-2/6 p-5 pt-10 bg-secondary-50">
+            <SideBar/>
+          </div>
+          <div className="w-full h-screen lg:basis-4/6 bg-secondary-50">
+            {/* TODO:テーブル部分調整、ヘッダー部にフィルター機能追加（以下、仮） */}
+            <div className="flex flex-col px-5 py-3">
+              <div className="pt-2 pb-1 font-semibold">
+                <h2>マイブック一覧</h2>
+              </div>
+              <div className="overflow-x-auto">
+                <div className="min-w-full inline-block align-middle">
+                  <div className="overflow-hidden">
+                    <table className="min-w-full divide-y divide-gray-200">
+                      <thead className="bg-primary-100">
+                        <tr>
+                          <th scope="col" className="px-5 py-2 text-start text-xs font-medium text-gray-500 uppercase">書籍タイトル</th>
+                          <th scope="col" className="px-5 py-2 text-start text-xs font-medium text-gray-500 uppercase">作者</th>
+                          <th scope="col" className="px-5 py-2 text-start text-xs font-medium text-gray-500 uppercase">評価</th>
+                          <th scope="col" className="px-5 py-2 text-start text-xs font-medium text-gray-500 uppercase">評価タイトル</th>
+                          <th scope="col" className="px-5 py-2 text-end text-xs font-medium text-gray-500 uppercase"></th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-200 bg-white">
+                        <tr>
+                          <td className="px-5 py-2 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-neutral-200">Hunter×hunter = ハンター ハンター</td>
+                          <td className="px-5 py-2 whitespace-nowrap text-sm text-gray-800 dark:text-neutral-200">冨樫義博</td>
+                          {/* TODO:評価機能追加 */}
+                          <td className="px-5 py-2 whitespace-nowrap text-sm text-gray-800 dark:text-neutral-200">⭐️⭐️⭐️⭐️⭐️</td>
+                          <td className="px-5 py-2 whitespace-nowrap text-sm text-gray-800 dark:text-neutral-200">頭脳戦が面白い</td>
+                          <td className="px-5 py-2 whitespace-nowrap text-end text-sm font-medium">
+                            {/* TODO:詳細、編集、削除ボタン追加&押下処理 */}
+                            <button type="button" className="inline-flex items-center gap-x-2 py-1 px-2 rounded-md border border-secondary-400 hover:border-secondary-500 hover:shadow hover:shadow-gray">
+                              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-4">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 12.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 18.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5Z" />
+                              </svg>
+                            </button>
+                          </td>
+                        </tr>
+
+                        
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    );
+  }
 }
+
+export default Home;
