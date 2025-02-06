@@ -2,7 +2,7 @@
 
 import React, { Component } from 'react';
 import Header from "../components/layout/Header";
-import SideBar from "../components/layout/Sidebar";
+import Sidebar from "../components/layout/Sidebar";
 
 class Home extends Component {
   render() {
@@ -12,7 +12,7 @@ class Home extends Component {
         <Header/>
         <main className="flex">
           <div className="hidden lg:block basis-2/6 p-5 pt-10 bg-secondary-50">
-            <SideBar/>
+            <Sidebar/>
           </div>
           <div className="w-full h-screen lg:basis-4/6 bg-secondary-50">
             {/* TODO:テーブル部分調整、ヘッダー部にフィルター機能追加（以下、仮） */}
