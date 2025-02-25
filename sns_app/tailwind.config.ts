@@ -2,9 +2,9 @@ import type { Config } from "tailwindcss";
 
 export default {
   content: [
-    "./pages/**/*.{js,ts,jsx,tsx,mdx}",
-    "./components/**/*.{js,ts,jsx,tsx,mdx}",
-    "./app/**/*.{js,ts,jsx,tsx,mdx}",
+    './pages/**/*.{js,ts,jsx,tsx,mdx}',
+    './components/**/*.{js,ts,jsx,tsx,mdx}',
+    './app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   theme: {
     extend: {
@@ -56,6 +56,10 @@ export default {
       shadow:{
         nomal: '0px 3px 10px rgba(48, 72, 83, 0.15)',
         r: '0px 0px 10px rgba(24, 75, 89, 0.1)',
+      },
+
+      fontSize:{
+        'xss': '11px',
       }
     },
 
