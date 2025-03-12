@@ -64,7 +64,7 @@ function LoginForm() {
   if (session) redirect("/bookshelf");
 
   return (
-    <div className="flex flex-col w-72 sm:w-96 md:w-116 items-center justify-center px-2 py-12 bg-secondary-50 shadow-lg">
+    <div className="flex flex-col items-center justify-center w-72 sm:w-96 md:w-116 px-2 py-12 bg-secondary-50 shadow-lg">
       <div className="flex items-center">
         <svg
           xmlns="http://www.w3.org/2000/svg"
