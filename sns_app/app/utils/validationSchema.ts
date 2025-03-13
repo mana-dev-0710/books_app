@@ -45,9 +45,6 @@ export const validationRegistSchema = z
         path: ["passwordConfirm"],
       })
     }
-<<<<<<< Updated upstream
-  });
-=======
   });
 
 export const validationSearchSchema = z
@@ -63,4 +60,3 @@ export const validationSearchSchema = z
 
 //TODO:Booksテーブルに投入するstatusは1〜3にバリデーション（DBで定義できないため）
 //TODO:Ratingテーブルに投入するratingは1〜5にバリデーション（DBで定義できないため）
->>>>>>> Stashed changes

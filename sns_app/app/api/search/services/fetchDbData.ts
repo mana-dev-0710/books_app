@@ -1,5 +1,6 @@
 import { getServerSession } from "next-auth";
-import { authOptions, CustomSession } from "@/app/api/auth/[...nextauth]/authOptions";
+import { authOptions } from "@/app/api/auth/[...nextauth]/authOptions";
+import { CustomSession } from "@/app/api/auth/[...nextauth]/route";
 import { Book } from "types/bookshelf";
 import prisma from "@/lib/Prisma";
 
@@ -12,7 +13,6 @@ async function fetchDbData(ndlData: Book[]): Promise<Book[]> {
 
     // セッションのユーザーIDを取得
     const session = await getServerSession(authOptions) as CustomSession;
-    console.log('session:', session);
     if (!session || !session.user || !session.user.id) {
         console.error("認証情報エラー");
         return ndlData;
@@ -29,10 +29,13 @@ async function fetchDbData(ndlData: Book[]): Promise<Book[]> {
                 isbn: { in: isbns },
             },
         });
+        if(!resDb) return ndlData;
 
+        let margedBook : Book[] = [];
         // DB情報を対応するndlDataに追加
         for (const resBook of resDb) {
-            const ndlBook = ndlData.find(book => book.isbn === resBook.isbn);
+            //DB情報に対応するndlDataの参照をndlBookとして定義
+            const ndlBook : Book | undefined = ndlData.find(book => book.isbn === resBook.isbn);
             if (ndlBook) {
                 ndlBook.finished = resBook.finished;
                 ndlBook.finishedAt = resBook.finishedAt ?? null;
@@ -42,11 +45,11 @@ async function fetchDbData(ndlData: Book[]): Promise<Book[]> {
                 ndlBook.reviewContent = resBook.reviewContent ?? null;
             }
         }
+        return ndlData;
     } catch (e) {
         console.error("DB情報の検索中に予期せぬエラーが発生しました。:", e);
         return ndlData;
     }
-    return ndlData;
 
 }
 

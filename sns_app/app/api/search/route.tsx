@@ -25,10 +25,11 @@ export async function GET(req: NextRequest) {
 
         // NDL情報取得
         const resNdlData: Book[] = await fetchNdlData(searchForm);
+        
         // DB情報取得
         const booksOfDbData: Book[] = await fetchDbData(resNdlData);
 
-        return booksOfDbData;
+        return NextResponse.json({ books : booksOfDbData }, { status: 200 });
     } catch (e) {
         return NextResponse.json({ error: "書籍検索中に想定外のエラーが発生しました。" }, { status: 500 });
     }

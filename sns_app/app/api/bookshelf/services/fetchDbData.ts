@@ -1,6 +1,7 @@
 
 import { getServerSession } from "next-auth";
-import { authOptions, CustomSession } from "app/api/auth/[...nextauth]/authOptions";
+import { authOptions } from "@/app/api/auth/[...nextauth]/authOptions";
+import { CustomSession } from "@/app/api/auth/[...nextauth]/route";
 import { Book } from "types/bookshelf";
 import prisma from "lib/Prisma";
 
@@ -10,6 +11,7 @@ async function fetchDbData(): Promise<Book[]> {
 
     // セッションのユーザーIDを取得
     const session = await getServerSession(authOptions) as CustomSession;
+
     if (!session || !session.user || !session.user.id) {
         console.error("認証情報エラー");
         return books;
@@ -23,6 +25,8 @@ async function fetchDbData(): Promise<Book[]> {
         resDb = await prisma.bookshelf.findMany({
             where: { userId },
         });
+
+        console.log("resDb:", resDb);
         for (const resBook of resDb) {
             books.push({
                 isbn: resBook.isbn,

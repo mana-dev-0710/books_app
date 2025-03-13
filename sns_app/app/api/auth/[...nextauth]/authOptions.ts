@@ -7,7 +7,7 @@ import { JWT } from "next-auth/jwt";
 
 export interface CustomSession extends Session {
   user: {
-    id: string;
+    id: string | null;
     name?: string | null;
     email?: string | null;
     image?: string | null;
@@ -15,7 +15,7 @@ export interface CustomSession extends Session {
 }
 
 interface CustomToken extends JWT {
-  id?: string; // `undefined` も許可
+  id?: string;
 }
 
 export const authOptions: NextAuthOptions = {
@@ -30,33 +30,14 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.email) return null;
-
-        let user = null;
-        try {
-          // メールアドレス存在チェック
-          user = await prisma.user.findUnique({
-            where: { email: credentials.email },
-          });
-        } catch (error) {
-          return null;
-        }
-        return user ?? null
-
-        // let user = null;
-        // try {
-        //   // メールアドレス存在チェック
-        //   user = await prisma.user.findUnique({
-        //     where: { email: credentials?.email },
-        //   });
-        // } catch (error) {
-        //   return null;
-        // }
-        // return user;
+        return await prisma.user.findUnique({
+          where: { email: credentials.email },
+        });
       },
     }),
   ],
   pages: {
-    signIn: "/bookshelf",
+    signIn: "/login",
     signOut: "/login",
   },
   session: {
@@ -66,7 +47,7 @@ export const authOptions: NextAuthOptions = {
     async redirect({ url, baseUrl }) {
       return url.startsWith(baseUrl) ? url : "/bookshelf";
     },
-    async jwt({ token, user }: { token: CustomToken; user?: any }) {
+    async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
       }
@@ -77,25 +58,9 @@ export const authOptions: NextAuthOptions = {
         ...session,
         user: {
           ...session.user,
-          id: token.id ?? "",
+          id: token.id ?? null, 
         },
       };
     },
-    // async jwt({ token, user, account, profile }) {
-    //   if (account) {
-    //     token.accessToken = account.access_token;
-    //     token.id = profile?.sub || user?.id || token.id;
-    //   }
-    //   return token;
-    // },
-    // async session({ session, token }: { session: Session; token: CustomToken }): Promise<CustomSession> {
-    //   return {
-    //     ...session,
-    //     user: {
-    //       ...session.user,
-    //       id: token.id ?? "",
-    //     },
-    //   };
-    // },
   },
 };

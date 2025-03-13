@@ -1,12 +1,11 @@
 import NextAuth from "next-auth";
-import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import prisma from "@/lib/Prisma";
 import { Session } from "next-auth";
 import { JWT } from "next-auth/jwt";
 
-interface CustomSession extends Session {
+export interface CustomSession extends Session {
   user: {
     id: string;
     name?: string | null;
@@ -16,11 +15,10 @@ interface CustomSession extends Session {
 }
 
 interface CustomToken extends JWT {
-  id?: string; // `undefined` も許可
+  id?: string;
 }
 
 const handler = NextAuth({
-  
   secret: process.env.NEXTAUTH_SECRET,
   adapter: PrismaAdapter(prisma),
   providers: [
@@ -31,16 +29,10 @@ const handler = NextAuth({
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        let user = null;
-        try {
-          // メールアドレス存在チェック
-          user = await prisma.user.findUnique({
-            where: { email: credentials?.email },
-          });
-        } catch (error) {
-          return null;
-        }
-        return user;
+        if (!credentials?.email) return null;
+        return await prisma.user.findUnique({
+          where: { email: credentials.email },
+        });
       },
     }),
   ],
@@ -55,10 +47,9 @@ const handler = NextAuth({
     async redirect({ url, baseUrl }) {
       return url.startsWith(baseUrl) ? url : "/bookshelf";
     },
-    async jwt({ token, user, account, profile }) {
-      if (account) {
-        token.accessToken = account.access_token;
-        token.id = profile?.sub || user?.id || token.id;
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
       }
       return token;
     },
@@ -75,4 +66,3 @@ const handler = NextAuth({
 });
 
 export { handler as GET, handler as POST };
-

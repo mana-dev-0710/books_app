@@ -4,9 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Dropdown } from 'flowbite-react';
 import { Modal } from 'flowbite-react';
-import { Book } from "@/types/bookshelf";
-import { SearchForm } from "@/types/bookshelf";
-import Icons from "components/icons/Icons";
+import { Book } from "@/types/bookshelf"
 
 const BookList = () => {
 
@@ -157,7 +155,6 @@ const BookList = () => {
                             <td className="px-3 py-2"></td>
                             <td className="hidden sm:table-cell px-3 py-1"></td>
                             <td className="hidden sm:table-cell px-3 py-1"></td>
-                            <td className="hidden md:table-cell px-3 py-1"></td>
                             <td className="px-3 py-1"></td>
                         </tr>
                     </tbody>

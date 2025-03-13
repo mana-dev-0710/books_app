@@ -10,11 +10,6 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
-<<<<<<< Updated upstream
-  const data = await req.json();
-  const { email, password } = data;
-=======
->>>>>>> Stashed changes
 
   try {
     const data = await req.json();
@@ -56,21 +51,4 @@ export async function POST(req: NextRequest) {
   
   return new NextResponse(JSON.stringify({ message: "新規登録に成功しました。" }), { status: 201 });
 
-<<<<<<< Updated upstream
-  if (Object.keys(errors).length > 0) {
-    return new NextResponse(JSON.stringify({ errors }), { status: 400 });
-  }
-
-  // パスワードをハッシュ化してユーザーを作成
-  const hashedPassword = await bcrypt.hash(password, 10);
-  await prisma.user.create({
-    data: {
-      email: email,
-      password: hashedPassword,
-    },
-  });
-
-  return new NextResponse(JSON.stringify({ message: "Success" }), { status: 201 });
-=======
->>>>>>> Stashed changes
 }

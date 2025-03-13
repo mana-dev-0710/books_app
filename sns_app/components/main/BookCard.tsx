@@ -30,8 +30,12 @@ const BookCard = ({ book, iconsSolid, toggleIconVisibility, setError }: BookCard
         const fetchImage = async () => {
             try {
                 setLoading(true);
-                const url = await searchImg(book, setError);
-                setImageUrl(url);
+                const imgUrl = book.imgUrl;
+                if (imgUrl) {
+                    setImageUrl(imgUrl);
+                } else {
+                    setImageUrl(defaultBookImage);
+                }
             } catch (error) {
                 setImageUrl(defaultBookImage);
             } finally {
@@ -53,7 +57,7 @@ const BookCard = ({ book, iconsSolid, toggleIconVisibility, setError }: BookCard
                 <Loading className={"h-32 flex justify-center items-center"} />
             ) : (
                 <Image
-                    src={imageUrl}
+                    src={`${book.imgUrl}`}
                     alt="書影イメージ"
                     width={80}
                     height={80}
@@ -95,32 +99,6 @@ const BookCard = ({ book, iconsSolid, toggleIconVisibility, setError }: BookCard
 
         </div>
     );
-};
-
-// 書影検索の処理
-export async function searchImg(data: Book, setError: React.Dispatch<React.SetStateAction<SearchError | undefined>>): Promise<string> {
-    let imageUrl = defaultBookImage;
-
-    try {
-        const res = await fetch(`/api/books/searchBookImg?isbn=${data.isbn}&jpeCode=${data.jpeCode}`, {
-            method: "GET",
-        });
-
-        const resJson = await res.json();
-
-        if (res.ok) {
-            if (resJson.imageUrl) {
-                imageUrl = resJson.imageUrl;
-            }
-        } else {
-            setError({ message: resJson.error });
-        }
-        return imageUrl;
-
-    } catch (e) {
-        setError({ message: "書影検索中にエラーが発生しました。" });
-        return imageUrl;
-    }
 };
 
 export default BookCard;

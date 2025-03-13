@@ -1,9 +1,7 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { useSession } from "next-auth/react";
+import React, { useState } from 'react';
 import { useForm } from "react-hook-form";
-import { useRouter } from "next/navigation";
 import Header from "components/layout/Header";
 import Sidebar from "components/layout/Sidebar";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -23,13 +21,8 @@ type SearchError = {
     message?: string;
 };
 
-const defaultProfileImage = '/images/default-profile.png';
-const defaultBookImage = '/images/default-book.png';
-
 const Bookshelf = () => {
-    const { data: session, status } = useSession();
-    const router = useRouter();
-    const [isLoading, setIsLoading] = useState(false);
+    
     const [books, setBooks] = useState<Book[]>([]);
     const [searchError, setSearchError] = useState<SearchError>();
     const [iconsSolid, setIconsSolid] = useState({
@@ -46,20 +39,6 @@ const Bookshelf = () => {
         resolver: zodResolver(validationSearchSchema),
     });
 
-    // useEffect(() => {
-    //     if (status === "unauthenticated") {
-    //         // ローディング中にbookshelf画面が表示されないよう、pushではなくreplaceを使用
-    //         router.replace("/login");
-    //     }
-    // }, [status, router]);
-
-    // // ローディングまたは未認証時にローディング画面を表示
-    // if (status === "loading" || status === "unauthenticated") {
-    //     return <div className="h-screen flex justify-center items-center bg-secondary-50" aria-label="読み込み中">
-    //         <div className="animate-spin h-10 w-10 border-4 border-secondary-500 rounded-full border-t-transparent"></div>
-    //     </div>;
-    // }
-
     const toggleIconVisibility = (iconName: keyof typeof iconsSolid) => {
         setIconsSolid((prev) => ({
             ...prev,
@@ -74,14 +53,13 @@ const Bookshelf = () => {
 
         //OpenSearchAPIから書籍情報を取得
         try {
-            const res = await fetch(`/api/books/search?isbn=${data.isbn}`, {
+            const res = await fetch(`/api/search?isbn=${data.isbn}`, {
                 method: "GET"
             });
 
             const resData = await res.json();
-
             if (res.ok) {
-                setBooks(resData);
+                setBooks(resData.books);
             } else {
                 setSearchError({ message: resData.error });
             }
@@ -89,20 +67,6 @@ const Bookshelf = () => {
             setSearchError({ message: "書籍情報検索中にエラーが発生しました。" });
         }
 
-        //TODO:DBから読書情報を取得
-        // try {
-        //     // TODO:DBから取得する処理
-        //     const res = await fetch(`/api/books/search?isbn=${data.isbn}`);
-        //     const resJson = await res.json();
-
-        //     if (resJson.error) {
-        //         setError(resJson.error);
-        //     } else {
-        //         setBooks(resJson);
-        //     }
-        // } catch (err) {
-        //     setError("読書情報取得中にエラーが発生しました。");
-        // }
     };
 
     return (
@@ -139,7 +103,7 @@ const Bookshelf = () => {
                             {searchError?.message && <span>{searchError.message}</span>}
                         </p>
                         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 space-y-1 overflow-y-auto max-h-[calc(100vh-200px)] pr-1 py-3">
-                            {books.map((book, index) => (
+                            {Array.isArray(books) && books.map((book, index) => (
                                 <BookCard
                                     key={index}
                                     book={book}
