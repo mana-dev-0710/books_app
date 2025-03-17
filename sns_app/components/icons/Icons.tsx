@@ -1,15 +1,15 @@
 'use client';
 
-import { UserIcon, ArrowRightEndOnRectangleIcon, HeartIcon, BookOpenIcon, StarIcon, Bars3Icon, PencilSquareIcon, EllipsisVerticalIcon } from '@heroicons/react/24/outline';
-import { HeartIcon as HeartIconSolid, BookOpenIcon as BookOpenIconSolid, StarIcon as StarIconSolid } from '@heroicons/react/24/solid';
+import { UserIcon, ArrowRightEndOnRectangleIcon, HeartIcon, PlusCircleIcon, StarIcon, Bars3Icon, PencilSquareIcon, EllipsisVerticalIcon } from '@heroicons/react/24/outline';
+import { HeartIcon as HeartIconSolid, CheckCircleIcon, StarIcon as StarIconSolid } from '@heroicons/react/24/solid';
 import React from 'react';
 import { JSX } from 'react';
 
 type IconName =
     'register' |
     'login' |
-    'finishedReading' |
-    'finishedReadingSolid' |
+    'addBookshelf' |
+    'isInBookshelf' |
     'favorite' |
     'favoriteSolid' |
     'rating' |
@@ -29,8 +29,8 @@ const iconMap: Record<IconName, JSX.Element> = {
     login: <ArrowRightEndOnRectangleIcon />,
     favorite: <HeartIcon />,
     favoriteSolid: <HeartIconSolid />,
-    finishedReading: <BookOpenIcon />,
-    finishedReadingSolid: <BookOpenIconSolid />,
+    addBookshelf: <PlusCircleIcon />,
+    isInBookshelf: <CheckCircleIcon />,
     rating: <StarIcon />,
     ratingSolid: <StarIconSolid />,
     hamburger: <Bars3Icon />,

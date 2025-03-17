@@ -58,14 +58,14 @@ model VerificationToken {
 }
 
 model Bookshelf {
-  id            String   @id @default(uuid())
-  userId        String
-  isbn          String
-  finished      Boolean  @default(false) // 読了フラグ
-  finishedAt    DateTime?
-  rated         Boolean  @default(false) // 評価フラグ
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @default(now())
+  id            　　　　String   @id @default(uuid())
+  userId        　　　　String
+  isbn          　　　　String
+  finishedReading      Boolean  @default(false) // 読了フラグ
+  finishedAt    　　　　DateTime?
+  isRated              Boolean  @default(false) // 評価フラグ
+  createdAt     　　　　DateTime @default(now())
+  updatedAt     　　　　DateTime @updatedAt
 
   user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -75,13 +75,14 @@ model Bookshelf {
 }
 
 model Rating {
-  id            String   @id @default(uuid())
-  userId        String
-  bookshelfId   String
-  rating        Int      // 1 ~ 5 点
-  review        String?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @default(now())
+  id              String   @id @default(uuid())
+  userId          String
+  bookshelfId     String
+  rating          Int      // 1 ~ 5 点
+  reviewTitle     String
+  reviewContent   String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @default(now())
 
   user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   bookshelf     Bookshelf     @relation(fields: [bookshelfId], references: [id], onDelete: Cascade)

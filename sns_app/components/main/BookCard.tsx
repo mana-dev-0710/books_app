@@ -6,25 +6,28 @@ import Icons from "components/icons/Icons";
 import { Book } from "@/types/bookshelf";
 import Loading from "components/layout/Loading";
 
+const defaultBookImage = '/images/default-book.png';
+
 type SearchError = {
     message?: string;
 };
 
+type Toast = {
+    message: string; 
+    type: "success" | "error" | "info";
+};
+
 type BookCardProp = {
     book: Book;
-    iconsSolid: {
-        favorite: boolean;
-        finishedReading: boolean;
-    };
-    toggleIconVisibility: (iconName: "favorite" | "finishedReading") => void;
+    setToast: React.Dispatch<React.SetStateAction<Toast | null>>;
     setError: React.Dispatch<React.SetStateAction<SearchError | undefined>>;
 };
 
-const defaultBookImage = '/images/default-book.png';
-
-const BookCard = ({ book, iconsSolid, toggleIconVisibility, setError }: BookCardProp) => {
+const BookCard = ({ book, setToast, setError }: BookCardProp) => {
     const [imageUrl, setImageUrl] = useState<string>(defaultBookImage);
     const [loading, setLoading] = useState<boolean>(true);
+    const [isFavorite, setIsFavorite] = useState<boolean>(book.isFavorite);
+    const [isInBookshelf, setIsInBookshelf] = useState<boolean>(book.isInBookshelf);
 
     useEffect(() => {
         const fetchImage = async () => {
@@ -45,6 +48,62 @@ const BookCard = ({ book, iconsSolid, toggleIconVisibility, setError }: BookCard
 
         fetchImage();
     }, [book, setError]);
+
+    // お気に入りトグル処理
+    const toggleFavorite = async () => {
+
+        try {
+            let alertMessage: string = "";
+
+            if (isFavorite) {
+                // お気に入り追加済みの場合、削除
+                const res = await fetch(`/api/search/favorite?isbn=${book.isbn}`, {
+                    method: "DELETE"
+                });
+                alertMessage = "お気に入りから削除しました。";
+            } else {
+                // お気に入り登録
+                const res = await fetch(`/api/search/favorite?isbn=${book.isbn}`, {
+                    method: 'PUT',
+                });
+                alertMessage = "お気に入りに追加しました。";
+            }
+            setIsFavorite(!isFavorite);
+            setToast({ message: alertMessage, type: "success" });
+        } catch (e) {
+            setToast({ message: "お気に入りの更新に失敗しました。", type: "error" });
+            console.error("お気に入りの更新中に予期せぬエラーが発生しました。:", e);
+        }
+
+    };
+
+    // 本棚トグル処理
+    const toggleBookshelf = async () => {
+
+        try {
+            if (!isInBookshelf) {
+                // 未登録の場合、本棚に登録
+                const res = await fetch(`/api/search/?isbn=${book.isbn}`, {
+                    method: "PUT"
+                });
+                const resData = await res.json();
+
+                if(res.ok) {
+                    setToast({ message: "本棚に追加しました。", type: "success" });
+                    setIsInBookshelf(!isInBookshelf);
+                } else {
+                    setToast({ message: "本棚の追加に失敗しました。", type: "error" });
+                    console.error("本棚に追加に失敗しました。:", resData.error);
+                }
+            } else {
+                return;
+            }
+        } catch (e) {
+            setToast({ message: "本棚の追加に失敗しました。", type: "error" });
+            console.error("本棚に追加中に予期せぬエラーが発生しました。:", e);
+        }
+
+    };
 
     return (
         <div className="flex flex-col bg-white border rounded-lg shadow-sm p-4">
@@ -76,23 +135,22 @@ const BookCard = ({ book, iconsSolid, toggleIconVisibility, setError }: BookCard
                 <div className="flex justify-end items-center gap-3 mt-2">
                     <Icons
                         name="favorite"
-                        className={`${iconsSolid.favorite ? "hidden" : ""} text-gray-600`}
-                        onClick={() => toggleIconVisibility("favorite")}
+                        className={`${!isFavorite ? "" : "hidden"} text-gray-600`}
+                        onClick={() => toggleFavorite()}
                     />
                     <Icons
                         name="favoriteSolid"
-                        className={`${iconsSolid.favorite ? "" : "hidden"} text-gray-600`}
-                        onClick={() => toggleIconVisibility("favorite")}
+                        className={`${isFavorite ? "" : "hidden"} text-gray-600`}
+                        onClick={() => toggleFavorite()}
                     />
                     <Icons
-                        name="finishedReading"
-                        className={`${iconsSolid.finishedReading ? "hidden" : ""} text-gray-600`}
-                        onClick={() => toggleIconVisibility("finishedReading")}
+                        name="addBookshelf"
+                        className={`${isInBookshelf ? "hidden" : ""} text-gray-600`}
+                        onClick={() => toggleBookshelf()}
                     />
                     <Icons
-                        name="finishedReadingSolid"
-                        className={`${iconsSolid.finishedReading ? "" : "hidden"} text-gray-600`}
-                        onClick={() => toggleIconVisibility("finishedReading")}
+                        name="isInBookshelf"
+                        className={`${!isInBookshelf ? "hidden" : ""} text-gray-600`}
                     />
                 </div>
             </div>
@@ -100,5 +158,6 @@ const BookCard = ({ book, iconsSolid, toggleIconVisibility, setError }: BookCard
         </div>
     );
 };
+
 
 export default BookCard;

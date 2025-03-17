@@ -62,6 +62,9 @@ async function fetchNdlData(searchForm: SearchForm): Promise<Book[]> {
                 publicationDate: resBook.publicationDate,
                 jpeCode: resBook.jpeCode,
                 imgUrl: await getImageUrl(resBook.isbn, resBook.jpeCode),  // 有効な書影検索用URLを設定
+                isFavorite: false, //初期値として設定
+                isInBookshelf: false, //初期値として設定
+                rated: false, //初期値として設定
             });
         };
 

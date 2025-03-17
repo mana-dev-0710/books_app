@@ -2,9 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { validationSearchSchema } from "app/utils/validationSchema";
 import { Book, SearchForm } from "types/bookshelf";
 import { fetchNdlData } from "app/api/search/services/fetchNdlData";
-import { fetchDbData } from "app/api/search/services/fetchDbData";
+import { selectDbData, insertBookshelfData } from "app/api/search/services/fetchDbData";
 
-export async function GET(req: NextRequest) {
+async function GET(req: NextRequest) {
 
     const searchForm: SearchForm = {};
 
@@ -16,22 +16,63 @@ export async function GET(req: NextRequest) {
         searchForm.publisher = searchParams.get("publisher") || undefined;
 
         //バリデーション
-        const [validationResult] = await Promise.all([
-            validationSearchSchema.safeParseAsync(searchForm),
-        ]);
+        const validationResult = await validationSearchSchema.safeParseAsync(searchForm);
         if (!validationResult.success) {
-            return NextResponse.json({ error: "バリデーションエラー" }, { status: 400 });
+            return NextResponse.json(
+                { error: "バリデーションエラー" },  // TODO:項目ごとにエラーメッセージを返却？
+                { status: 400 },
+            );
         }
 
         // NDL情報取得
         const resNdlData: Book[] = await fetchNdlData(searchForm);
-        
-        // DB情報取得
-        const booksOfDbData: Book[] = await fetchDbData(resNdlData);
+        if (!resNdlData || resNdlData.length === 0) {
+            return NextResponse.json(
+                { books: resNdlData },
+                { status: 200 },
+            );
+        }
 
-        return NextResponse.json({ books : booksOfDbData }, { status: 200 });
+        // DB情報取得
+        const booksOfDbData: Book[] = await selectDbData(resNdlData);
+
+        return NextResponse.json(
+            { books: booksOfDbData },
+            { status: 200 },
+        );
     } catch (e) {
-        return NextResponse.json({ error: "書籍検索中に想定外のエラーが発生しました。" }, { status: 500 });
+        return NextResponse.json({ status: 500 });
     }
 
 }
+
+async function PUT(req: NextRequest) {
+
+    try {
+        const reqUrl = new URL(req.url);
+        const isbn = reqUrl.searchParams.get("isbn");
+        if (!isbn) return NextResponse.json(
+            { error: "ISBNが不正です。" },
+            { status: 400 }
+        );
+
+        //バリデーション
+        const validationResult = await validationSearchSchema.safeParseAsync({ isbn });
+        if (!validationResult.success) {
+            return NextResponse.json(
+                { error: "バリデーションエラー" },
+                { status: 400 }
+            );
+        }
+
+        // 本棚への登録
+        await insertBookshelfData(isbn);
+
+        return NextResponse.json({ status: 200 });
+    } catch (e) {
+        return NextResponse.json({ status: 500 });
+    }
+
+}
+
+export { GET, PUT };

@@ -8,9 +8,10 @@ export type Book = {
     genre?: string;
     jpeCode?: string;
     imgUrl?: string;
-    finished?: boolean;
+    isFavorite: boolean;
+    isInBookshelf: boolean;
     finishedAt?: Date | null;
-    rated?: boolean;
+    rated: boolean;
     rating?: number | null;
     reviewTitle? : string | null;
     reviewContent? : string | null;
