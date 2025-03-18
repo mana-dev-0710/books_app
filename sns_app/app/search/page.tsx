@@ -1,0 +1,126 @@
+'use client';
+
+import React, { useState } from 'react';
+import { useForm } from "react-hook-form";
+import Header from "components/layout/Header";
+import Sidebar from "components/layout/Sidebar";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { validationSearchSchema } from "app/utils/validationSchema";
+import BookCard from "components/main/BookCard";
+import { Book } from "@/types/bookshelf";
+import ToastNotification from "@/components/common/ToastNotification";
+
+type SearchForm = {
+    isbn: string;
+    title?: string;
+    creator?: string;
+    publisher?: string;
+};
+
+//フォーム入力時のエラー
+type SearchError = {
+    message?: string;
+};
+
+const Bookshelf = () => {
+
+    const [books, setBooks] = useState<Book[]>([]);
+    const [searchError, setSearchError] = useState<SearchError>();
+    const [toast, setToast] = useState<{ message: string; type: "success" | "error" | "info" } | null>(null);
+
+    const {
+        register,
+        handleSubmit,
+        formState: { errors, isValid, isDirty },
+    } = useForm<SearchForm>({
+        mode: "onChange",
+        resolver: zodResolver(validationSearchSchema),
+    });
+
+    // 書籍検索の処理
+    const searchBooks = async (data: SearchForm) => {
+        setBooks([]);
+        setSearchError(undefined);
+        setToast(null);
+
+        //OpenSearchAPIから書籍情報を取得
+        try {
+            const res = await fetch(`/api/search?isbn=${data.isbn}`, {
+                method: "GET"
+            });
+
+            const resData = await res.json();
+            if (res.ok) {
+                setBooks(resData.books);
+            } else {
+                setSearchError({ message: resData.error });
+            }
+        } catch (err) {
+            setSearchError({ message: "書籍情報検索中にエラーが発生しました。" });
+        }
+
+    };
+
+    return (
+        <>
+            <div className="font-[family-name:var(--font-geist-sans)] overflow-x-hidden">
+                <Header />
+                <main className="flex">
+                    <div className="hidden lg:flex lg:basis-1/4 p-5 pt-10 bg-secondary-50">
+                        <Sidebar />
+                    </div>
+                    <div className="lg:basis-3/4 w-full h-screen bg-secondary-50 overflow-x-auto">
+                        <div className="flex flex-col px-5 py-3">
+                            <h2 className="py-2 text-base md:text-lg font-semibold">書籍検索</h2>
+                            <div className="pb-5 border-b border-gray-300">
+                                <form className="flex flex-col" onSubmit={handleSubmit(searchBooks)}>
+                                    <label className="py-1 text-sm md:text-base" htmlFor="isbn">
+                                        ISBN
+                                    </label>
+                                    <input
+                                        id="isbn"
+                                        type="text"
+                                        placeholder=""
+                                        className="w-56 p-1 pl-2 text-sm border focus:outline-primary-400"
+                                        {...register("isbn")}
+                                    />
+                                    <p className="p-1 text-xss text-red-500">
+                                        {errors.isbn?.message as React.ReactNode}
+                                    </p>
+                                    <div className="w-full flex justify-end">
+                                        <button className="py-1 px-3 text-sm sm:text-base rounded-md hover:shadow hover:shadow-black bg-primary-400 hover:bg-primary-500 text-white disabled:bg-primary-200 disabled:shadow-none" type="submit" disabled={!isValid}>検索</button>
+                                    </div>
+                                </form>
+                            </div>
+                            <p className="p-1 mt-2 text-xs text-red-500">
+                                {searchError?.message && <span>{searchError.message}</span>}
+                            </p>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 space-y-1 overflow-y-auto max-h-[calc(100vh-200px)] pr-1 py-3">
+                                {Array.isArray(books) && books.map((book, index) => (
+                                    <BookCard
+                                        key={index}
+                                        book={book}
+                                        setToast={setToast}
+                                        setError={setSearchError}
+                                    />
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                </main>
+            </div>
+            {/* トースト表示 */}
+            {toast &&
+                <ToastNotification
+                    className="fixed top-5 right-5 z-50"
+                    message={toast.message}
+                    type={toast.type}
+                    onClose={() => setToast(null)}
+                />
+            }
+        </>
+    );
+};
+
+export default Bookshelf;
+

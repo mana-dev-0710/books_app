@@ -1,4 +1,4 @@
-import NextAuth from "next-auth";
+import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import prisma from "@/lib/Prisma";
@@ -7,7 +7,7 @@ import { JWT } from "next-auth/jwt";
 
 export interface CustomSession extends Session {
   user: {
-    id: string;
+    id: string | null;
     name?: string | null;
     email?: string | null;
     image?: string | null;
@@ -18,7 +18,7 @@ interface CustomToken extends JWT {
   id?: string;
 }
 
-const handler = NextAuth({
+export const authOptions: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
   adapter: PrismaAdapter(prisma),
   providers: [
@@ -58,11 +58,9 @@ const handler = NextAuth({
         ...session,
         user: {
           ...session.user,
-          id: token.id ?? "",
+          id: token.id ?? null, 
         },
       };
     },
   },
-});
-
-export { handler as GET, handler as POST };
+};

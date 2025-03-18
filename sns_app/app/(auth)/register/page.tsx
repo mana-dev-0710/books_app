@@ -57,8 +57,21 @@ const Page = () => {
       },
       method: "POST",
     });
+
     if (res.ok) {
-      signIn("credentials", { email: email, password: password, userName: userName });
+      const signInRes = await signIn("credentials", {
+        email: email,
+        password: password,
+        userName: userName,
+        redirect: false,
+      });
+
+      if (signInRes?.ok) {
+        redirect("/bookshelf");
+      } else {
+       //setResError({ passwordConfirm: ["ユーザー登録に失敗しました。"] });
+        return;
+      }
     } else {
       const resError = await res.json();
       setResError(resError.errors);

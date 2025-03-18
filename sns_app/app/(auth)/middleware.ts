@@ -6,4 +6,6 @@ export default withAuth({
   },
 });
 
-export const config = { matcher: ["/bookshelf"] };
+export const config = { 
+  matcher: ["/bookshelf/:path*", "/search/:path*"] 
+};

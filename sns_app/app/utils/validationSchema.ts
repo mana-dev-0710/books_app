@@ -46,3 +46,17 @@ export const validationRegistSchema = z
       })
     }
   });
+
+export const validationSearchSchema = z
+  .object({
+    isbn: z
+      .string()
+      .nonempty("ISBNコードを入力してください。")
+      .refine((val) => val.length === 10 || val.length === 13, {
+        message: "ISBNコードは10桁または13桁で入力してください。",
+      }),
+  });
+
+
+//TODO:Booksテーブルに投入するstatusは1〜3にバリデーション（DBで定義できないため）
+//TODO:Ratingテーブルに投入するratingは1〜5にバリデーション（DBで定義できないため）
