@@ -29,7 +29,7 @@ const Bookshelf = () => {
   return (
     <div className="font-[family-name:var(--font-geist-sans)]">
       <Header />
-      <main className="flex">
+      <main className="flex pt-12">
         <div className="hidden lg:flex lg:basis-1/4 p-5 pt-10 bg-secondary-50">
           <Sidebar />
         </div>

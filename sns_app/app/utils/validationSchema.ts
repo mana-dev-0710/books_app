@@ -22,9 +22,9 @@ export const validationRegistSchema = z
       .string()
       .nonempty("ユーザー名を入力してください。")
       .max(16, "ユーザー名は16文字以内で入力して下さい。")
-      .regex(/^[a-zA-Zａ-ｚＡ-Ｚ0-9０-９ぁ-んァ-ヶ一-龯々〆〤_-]+$/, 
+      .regex(/^[a-zA-Zａ-ｚＡ-Ｚ0-9０-９ぁ-んァ-ヶ一-龯々〆〤_-]+$/,
         { message: "ユーザー名には半角英字・全角英字・数字・かな・カナ・漢字・アンダースコア・ハイフンのみ使用できます。" })
-      .regex(/^(?![_\-]).*(?<![_\-])$/, 
+      .regex(/^(?![_\-]).*(?<![_\-])$/,
         { message: "ユーザー名の先頭または末尾にアンダースコア (_) またはハイフン (-) を使用しないでください。" }),
     password: z
       .string()
@@ -47,7 +47,7 @@ export const validationRegistSchema = z
     }
   });
 
-export const validationSearchSchema = z
+export const validationSearchSchemaIsbn = z
   .object({
     isbn: z
       .string()
@@ -57,6 +57,21 @@ export const validationSearchSchema = z
       }),
   });
 
+export const validationSearchSchemaDetails = z
+  .object({
+    title: z
+      .string()
+      .max(32, "タイトルは32字以内で入力して下さい。").optional(),
+    author: z
+      .string()
+      .max(16, "作者は16字以内で入力して下さい。").optional(),
+    publisher: z
+      .string()
+      .max(16, "出版社は16字以内で入力して下さい。").optional(),
+  })
+  .refine(data => data.title || data.author || data.publisher, {
+    message: "タイトル、作者、出版社のいずれかを入力してください。",
+    path: ["publisher"],
+});
 
-//TODO:Booksテーブルに投入するstatusは1〜3にバリデーション（DBで定義できないため）
 //TODO:Ratingテーブルに投入するratingは1〜5にバリデーション（DBで定義できないため）
