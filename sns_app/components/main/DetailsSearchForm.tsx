@@ -46,7 +46,7 @@ const DetailsSearchForm: React.FC<DetailsSearchFormProps> = ({ setSearchForm }) 
             />
             <p className="p-1 text-xss text-red-500">{errors.title?.message as React.ReactNode}</p>
             <label className="flex items-center py-1 text-xs md:text-sm" htmlFor="author">
-                作者
+                著者
                 <span className="px-2.5 ml-2 rounded-full bg-yellow-100 font-medium text-xss text-yellow-800">
                     １項目以上の入力必須
                 </span>
