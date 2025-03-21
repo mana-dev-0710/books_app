@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { validationSearchSchema } from "app/utils/validationSchema";
+import { validationSearchSchemaIsbn } from "app/utils/validationSchema";
 import { insertFavoriteData, deleteFavoriteData } from "app/api/search/services/fetchDbData";
 
 async function GET() {
@@ -20,7 +20,7 @@ async function PUT(req: NextRequest) {
         );
 
         //バリデーション　TODO:項目ごとにエラーメッセージを返却？
-        const validationResult = await validationSearchSchema.safeParseAsync({ isbn });
+        const validationResult = await validationSearchSchemaIsbn.safeParseAsync({ isbn: isbn });
         if (!validationResult.success) {
             return NextResponse.json(
                 { error: "バリデーションエラー" }, 
@@ -49,7 +49,7 @@ async function DELETE(req: NextRequest) {
         );
 
         //バリデーション
-        const validationResult = await validationSearchSchema.safeParseAsync({ isbn });
+        const validationResult = await validationSearchSchemaIsbn.safeParseAsync({ isbn: isbn });
         if (!validationResult.success) {
             return NextResponse.json(
                 { error: "バリデーションエラー" }, 

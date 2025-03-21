@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { validationSearchSchema } from "app/utils/validationSchema";
+import { validationSearchSchemaIsbn, validationSearchSchemaDetails } from "app/utils/validationSchema";
 import { Book, SearchForm } from "types/bookshelf";
 import { fetchNdlData } from "app/api/search/services/fetchNdlData";
 import { selectDbData, insertBookshelfData } from "app/api/search/services/fetchDbData";
@@ -10,18 +10,34 @@ async function GET(req: NextRequest) {
 
     try {
         const { searchParams } = new URL(req.url);
-        searchForm.isbn = searchParams.get("isbn") || undefined;
-        searchForm.title = searchParams.get("title") || undefined;
-        searchForm.author = searchParams.get("author") || undefined;
-        searchForm.publisher = searchParams.get("publisher") || undefined;
+        searchForm.isbn = decodeURIComponent(searchParams.get("isbn") || "") || undefined;
+        searchForm.title = decodeURIComponent(searchParams.get("title") || "") || "";
+        searchForm.author = decodeURIComponent(searchParams.get("author") || "") || "";
+        searchForm.publisher = decodeURIComponent(searchParams.get("publisher") || "") || "";
 
         //バリデーション
-        const validationResult = await validationSearchSchema.safeParseAsync(searchForm);
-        if (!validationResult.success) {
-            return NextResponse.json(
-                { error: "バリデーションエラー" },  // TODO:項目ごとにエラーメッセージを返却？
-                { status: 400 },
-            );
+        if (searchForm.isbn) {
+            const validationResultIsbn = await validationSearchSchemaIsbn.safeParseAsync({
+                isbn: searchForm.isbn
+            });
+            if (!validationResultIsbn.success) {
+                return NextResponse.json(
+                    { error: "バリデーションエラー" },  // TODO:項目ごとにエラーメッセージを返却？
+                    { status: 400 },
+                );
+            }
+        } else {
+            const validationResultDetails = await validationSearchSchemaDetails.safeParseAsync({
+                title: searchForm.title,
+                author: searchForm.author,
+                publisher: searchForm.publisher
+            });
+            if (!validationResultDetails.success) {
+                return NextResponse.json(
+                    { error: "バリデーションエラー" },  // TODO:項目ごとにエラーメッセージを返却？
+                    { status: 400 },
+                );
+            }
         }
 
         // NDL情報取得
@@ -57,7 +73,7 @@ async function PUT(req: NextRequest) {
         );
 
         //バリデーション
-        const validationResult = await validationSearchSchema.safeParseAsync({ isbn });
+        const validationResult = await validationSearchSchemaIsbn.safeParseAsync({ isbn });
         if (!validationResult.success) {
             return NextResponse.json(
                 { error: "バリデーションエラー" },

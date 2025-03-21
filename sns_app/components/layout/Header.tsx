@@ -19,7 +19,7 @@ const Header = () => {
 
   return (
     <div>
-      <header className="sticky top-0 z-50 min-w-screen">
+      <header className="fixed top-0 min-w-screen left-0 w-full bg-white z-50 shadow-md">
         <nav className="flex items-center justify-between px-4 py-2 flex-wrap w-full bg-primary-600 text-white">
           {/* TODO:ハンバーガーアイコン押下処理(md未満でハンバーガーメニュー表示) */}
           <div className="lg:hidden text-sm align-content-center">

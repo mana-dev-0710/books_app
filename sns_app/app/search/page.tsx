@@ -1,52 +1,77 @@
 'use client';
 
-import React, { useState } from 'react';
-import { useForm } from "react-hook-form";
+import React, { useState, useEffect } from 'react';
 import Header from "components/layout/Header";
 import Sidebar from "components/layout/Sidebar";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { validationSearchSchema } from "app/utils/validationSchema";
+import IsbnSearchForm from "components/main/IsbnSearchForm";
+import DetailsSearchForm from "components/main/DetailsSearchForm";
 import BookCard from "components/main/BookCard";
+import Title from "components/layout/Title";
 import { Book } from "@/types/bookshelf";
 import ToastNotification from "@/components/common/ToastNotification";
+import { Tabs, Accordion } from 'flowbite-react';
 
 type SearchForm = {
-    isbn: string;
+    isbn?: string;
     title?: string;
-    creator?: string;
+    author?: string;
     publisher?: string;
 };
 
-//フォーム入力時のエラー
 type SearchError = {
     message?: string;
 };
 
-const Bookshelf = () => {
+const Search = () => {
 
     const [books, setBooks] = useState<Book[]>([]);
+    const [searchForm, setSearchForm] = useState<SearchForm>({});
     const [searchError, setSearchError] = useState<SearchError>();
     const [toast, setToast] = useState<{ message: string; type: "success" | "error" | "info" } | null>(null);
+    const [activeTab, setActiveTab] = useState<'isbn' | 'details'>('isbn');
 
-    const {
-        register,
-        handleSubmit,
-        formState: { errors, isValid, isDirty },
-    } = useForm<SearchForm>({
-        mode: "onChange",
-        resolver: zodResolver(validationSearchSchema),
-    });
+    //searchFormを監視し、変更があれば検索を実行
+    useEffect(() => {
+        if (searchForm.isbn || searchForm.title || searchForm.author || searchForm.publisher) {
+            searchBooks(searchForm);
+        }
+    }, [searchForm]);
 
     // 書籍検索の処理
     const searchBooks = async (data: SearchForm) => {
+        console.log("---searchBooks start---");
+        console.log("data: ", data);
+
         setBooks([]);
         setSearchError(undefined);
         setToast(null);
 
         //OpenSearchAPIから書籍情報を取得
         try {
-            const res = await fetch(`/api/search?isbn=${data.isbn}`, {
-                method: "GET"
+            let fetchUrl = '/api/search?';
+            const queryParams = new URLSearchParams();
+
+            if (data.isbn) {
+                queryParams.append("isbn", data.isbn);
+            } else {
+                if (data.title) {
+                    queryParams.append("title", data.title);
+                }
+                if (data.author) {
+                    queryParams.append("author", data.author);
+                }
+                if (data.publisher) {
+                    queryParams.append("publisher", data.publisher);
+                }
+            }
+            fetchUrl += queryParams; 
+            console.log("fetchUrl:", fetchUrl);
+            const res = await fetch(fetchUrl, {
+                method: "GET",
+                headers: {
+                    "Accept": "application/json",
+                    "Content-Type": "application/json; charset=UTF-8",
+                },
             });
 
             const resData = await res.json();
@@ -63,47 +88,58 @@ const Bookshelf = () => {
 
     return (
         <>
-            <div className="font-[family-name:var(--font-geist-sans)] overflow-x-hidden">
+            <div className="font-[family-name:var(--font-geist-sans)] overflow-hidden">
                 <Header />
-                <main className="flex">
+                <main className="flex h-screen pt-12">
                     <div className="hidden lg:flex lg:basis-1/4 p-5 pt-10 bg-secondary-50">
                         <Sidebar />
                     </div>
                     <div className="lg:basis-3/4 w-full h-screen bg-secondary-50 overflow-x-auto">
-                        <div className="flex flex-col px-5 py-3">
-                            <h2 className="py-2 text-base md:text-lg font-semibold">書籍検索</h2>
-                            <div className="pb-5 border-b border-gray-300">
-                                <form className="flex flex-col" onSubmit={handleSubmit(searchBooks)}>
-                                    <label className="py-1 text-sm md:text-base" htmlFor="isbn">
-                                        ISBN
-                                    </label>
-                                    <input
-                                        id="isbn"
-                                        type="text"
-                                        placeholder=""
-                                        className="w-56 p-1 pl-2 text-sm border focus:outline-primary-400"
-                                        {...register("isbn")}
-                                    />
-                                    <p className="p-1 text-xss text-red-500">
-                                        {errors.isbn?.message as React.ReactNode}
-                                    </p>
-                                    <div className="w-full flex justify-end">
-                                        <button className="py-1 px-3 text-sm sm:text-base rounded-md hover:shadow hover:shadow-black bg-primary-400 hover:bg-primary-500 text-white disabled:bg-primary-200 disabled:shadow-none" type="submit" disabled={!isValid}>検索</button>
-                                    </div>
-                                </form>
+                        <div className="flex flex-col h-full px-5 py-3">
+                            <Title titleName="書籍検索" />
+                            <div className="pb-3 border-b border-gray-300">
+                                <Tabs onActiveTabChange={(tab) => setActiveTab(tab === 0 ? "isbn" : "details")}
+                                    variant="underline"
+                                    theme={{
+                                        tablist: {
+                                            base: "flex border-b border-gray-300",
+                                            tabitem: {
+                                                base: "px-4 py-2 text-xs",
+                                                variant: {
+                                                    underline: {
+                                                        base: "rounded-t-md text-gray-800 ",
+                                                        active: {
+                                                            on: "bg-primary-200 font-semibold",
+                                                            off: "text-gray-600 hover:font-semibold hover:text-primary-600",
+                                                        },
+                                                    },
+                                                },
+                                            },
+                                        },
+                                    }}
+                                >
+                                    <Tabs.Item title="ISBN検索" active={activeTab === 'isbn'}>
+                                        <IsbnSearchForm setSearchForm={setSearchForm} />
+                                    </Tabs.Item>
+                                    <Tabs.Item title="詳細検索" active={activeTab === 'details'}>
+                                        <DetailsSearchForm setSearchForm={setSearchForm} />
+                                    </Tabs.Item>
+                                </Tabs>
                             </div>
-                            <p className="p-1 mt-2 text-xs text-red-500">
+                            <p className="p-1 mt-2 text-xs md:text-sm text-red-500">
                                 {searchError?.message && <span>{searchError.message}</span>}
                             </p>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 space-y-1 overflow-y-auto max-h-[calc(100vh-200px)] pr-1 py-3">
-                                {Array.isArray(books) && books.map((book, index) => (
-                                    <BookCard
-                                        key={index}
-                                        book={book}
-                                        setToast={setToast}
-                                        setError={setSearchError}
-                                    />
-                                ))}
+                            <div className="relative flex-1">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 overflow-y-auto max-h-[calc(100vh-250px)] pr-1 py-3 pb-16">
+                                    {Array.isArray(books) && books.map((book, index) => (
+                                        <BookCard
+                                            key={index}
+                                            book={book}
+                                            setToast={setToast}
+                                            setError={setSearchError}
+                                        />
+                                    ))}
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -122,5 +158,5 @@ const Bookshelf = () => {
     );
 };
 
-export default Bookshelf;
+export default Search;
 

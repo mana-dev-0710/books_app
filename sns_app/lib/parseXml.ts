@@ -72,6 +72,7 @@ async function parseXmlToJson(xml: string): Promise<Record<string, string>[]> {
             return resJsonArray;
         }
         const metadata = channel["item"];
+        //console.log("metadata:", metadata);
 
         // ISBNをキーとしたデータマップ
         const isbnMap: Record<string, Record<string, string>> = {};
@@ -83,14 +84,17 @@ async function parseXmlToJson(xml: string): Promise<Record<string, string>[]> {
 
             // ISBNを取得
             const findIsbn = (): string => {
-                type DcIdentifier = {
-                    "xsi:type"?: string;
-                    "_"?: string;
-                };
+                const identifiers = item["dc:identifier"];
+                console.log("identifiers:", identifiers);
+                if (!identifiers) return "";
 
-                const identifiers: DcIdentifier[] = (item["dc:identifier"] ?? []) as DcIdentifier[];
+                // 配列の各要素をチェック
                 for (const identifier of identifiers) {
-                    if (identifier["xsi:type"] === "dcndl:ISBN") {
+                    console.log("identifier:", identifier);
+                    if (typeof identifier === "string") {
+                        return validateIsbn(identifier);
+                    } else if (typeof identifier === "object" && identifier["$"]["xsi:type"] === "dcndl:ISBN") {
+                        console.log("identifier:", identifier);
                         return validateIsbn(identifier["_"] || "");
                     }
                 }
@@ -98,6 +102,7 @@ async function parseXmlToJson(xml: string): Promise<Record<string, string>[]> {
             };
 
             const isbn = findIsbn();
+            console.log("isbn:", isbn);
             const title = findAllValidValues("title", "");
             //ISBNまたはタイトルが空の場合はデータをセットせずスキップ
             if (!isbn || !title) return;
