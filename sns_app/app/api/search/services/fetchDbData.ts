@@ -43,9 +43,9 @@ async function selectDbData(ndlData: BaseBook[]): Promise<SearchedBook[]> {
 
         // ndlDataをSearchedBook型に変換し、DB情報を統合
         const searchedBook: SearchedBook[] = ndlData.map(book => {
-            // isbnに一致するresBookshelfのデータを取得（本棚に存在するかチェック）
+            // isbnが一致するresBookshelfのデータを取得（本棚に存在するかチェック）
             const isInBookshelf = resBookshelf.some(bookshelf => bookshelf.isbn === book.isbn);
-            // isbnに一致するresFavoriteのデータを取得（お気に入りに存在するかチェック）
+            // isbnが一致するresFavoriteのデータを取得（お気に入りに存在するかチェック）
             const isFavorite = resFavorite.some(fav => fav.isbn === book.isbn);
 
             return {

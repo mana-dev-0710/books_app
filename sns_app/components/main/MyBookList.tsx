@@ -11,7 +11,7 @@ const MyBookList = () => {
     const router = useRouter();
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [selectedBookId, setSelectedBookId] = useState<string | null>(null);
-    const [books, setBooks] = useState<MyBook[]>();
+    const [books, setBooks] = useState<MyBook[] | null>(null);
 
     // 検索処理
     const searchBookshelf = async () => {
@@ -112,7 +112,19 @@ const MyBookList = () => {
                         <th className="px-3 py-2 text-end"></th>
                     </tr>
                 </thead>
-                {books && books.length > 0 ? (
+                {books === null ? (
+                    <tbody className="bg-white text-gray-500 text-xs font-medium">
+                        <tr>
+                            <td className="px-3 py-2 whitespace-normal font-medium">
+                                マイ本棚を取得中...
+                            </td>
+                            <th className="px-3 py-2 text-start"></th>
+                            <th className="hidden sm:table-cell px-3 py-2 text-start"></th>
+                            <th className="hidden sm:table-cell min-w-[4rem] px-3 py-2 text-start"></th>
+                            <th className="px-3 py-2 text-end"></th>
+                        </tr>
+                    </tbody>
+                ) : books.length > 0 ? (
                     <tbody className="divide-y divide-gray-200 bg-white text-start text-xs">
                         {books.map((book, index) => (
                             <tr key={index}>
@@ -123,20 +135,10 @@ const MyBookList = () => {
                                     {book.rated ? book.rating : "未評価"}
                                 </td>
                                 <td className="px-3 py-1">
-                                    <Dropdown
-                                        inline={true}
-                                        placement="bottom-end"
-                                        className="btn btn-ghost btn-sm btn-circle"
-                                    >
-                                        <Dropdown.Item onClick={() => console.log("詳細")}>
-                                            詳細
-                                        </Dropdown.Item>
-                                        <Dropdown.Item onClick={() => handleEditConfirm()}>
-                                            編集
-                                        </Dropdown.Item>
-                                        <Dropdown.Item onClick={() => handleOpenDeleteModal("1")}>
-                                            削除
-                                        </Dropdown.Item>
+                                    <Dropdown inline={true} placement="bottom-end" className="btn btn-ghost btn-sm btn-circle">
+                                        <Dropdown.Item onClick={() => console.log("詳細")}>詳細</Dropdown.Item>
+                                        <Dropdown.Item onClick={() => handleEditConfirm()}>編集</Dropdown.Item>
+                                        <Dropdown.Item onClick={() => handleOpenDeleteModal("1")}>削除</Dropdown.Item>
                                     </Dropdown>
                                 </td>
                             </tr>
@@ -146,10 +148,6 @@ const MyBookList = () => {
                     <tbody className="px-3 py-2 bg-white text-start text-sm text-gray-700">
                         <tr>
                             <td className="px-3 py-2 whitespace-normal font-medium">本棚に書籍がありません。</td>
-                            <td className="px-3 py-2"></td>
-                            <td className="hidden sm:table-cell px-3 py-1"></td>
-                            <td className="hidden sm:table-cell px-3 py-1"></td>
-                            <td className="px-3 py-1"></td>
                         </tr>
                     </tbody>
                 )}
