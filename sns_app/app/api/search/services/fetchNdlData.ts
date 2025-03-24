@@ -1,11 +1,12 @@
-import { myBook, SearchForm } from "@/types/bookTypes";
+import { BaseBook } from "@/types/bookTypes";
+import { SearchForm } from "@/types/formTypes";
 import { parseXmlToJson, parseXmlToJsonByIsbn } from "lib/parseXml";
 import { getImageUrl } from "app/api/search/services/fetchNdlImgUrl";
 
 const maximumRecords = "50";
 
-async function fetchNdlData(searchForm: SearchForm): Promise<myBook[]> {
-    let books: myBook[] = [];
+async function fetchNdlData(searchForm: SearchForm): Promise<BaseBook[]> {
+    let books: BaseBook[] = [];
 
     const isbn = searchForm.isbn;
     const title = searchForm.title;
@@ -63,9 +64,6 @@ async function fetchNdlData(searchForm: SearchForm): Promise<myBook[]> {
                 publicationDate: resBook.publicationDate,
                 jpeCode: resBook.jpeCode,
                 imgUrl: await getImageUrl(resBook.isbn, resBook.jpeCode),  // 有効な書影検索用URLを設定
-                isFavorite: false, //初期値として設定
-                isInBookshelf: false, //初期値として設定
-                rated: false, //初期値として設定
             });
         };
 

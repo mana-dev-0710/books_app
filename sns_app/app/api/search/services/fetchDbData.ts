@@ -1,23 +1,29 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/authOptions";
 import { CustomSession } from "@/app/api/auth/[...nextauth]/route";
-import { myBook } from "@/types/bookTypes";
+import { BaseBook, SearchedBook } from "@/types/bookTypes";
 import prisma from "@/lib/Prisma";
 
-async function selectDbData(ndlData: myBook[]): Promise<myBook[]> {
+async function selectDbData(ndlData: BaseBook[]): Promise<SearchedBook[]> {
+
+    //ndlDataをSearchedBook型に変換し、デフォルト値を設定
+    const defaultSearchedBook: SearchedBook[] = ndlData.map(book => ({
+        ...book,
+        isInBookshelf: false, // デフォルト値
+        isFavorite: false, // デフォルト値
+    }));
 
     // セッションのユーザーIDを取得
     const session = await getServerSession(authOptions) as CustomSession;
     if (!session || !session.user || !session.user.id) {
         console.error("認証情報エラー");
-        return ndlData;
+        return defaultSearchedBook;
     }
     const userId = session.user.id;
 
     // DB情報の取得処理
     try {
-        let dbBooks: myBook[] = [];
-        const isbns = ndlData.map(book => book.isbn);
+        const isbns: string[] = ndlData.map(book => book.isbn);
 
         // 本棚の書籍情報を取得
         const resBookshelf = await prisma.bookshelf.findMany({
@@ -25,23 +31,7 @@ async function selectDbData(ndlData: myBook[]): Promise<myBook[]> {
                 userId,
                 isbn: { in: isbns },
             },
-            include: {
-                ratings: true,
-            },
         });
-        if (!resBookshelf || resBookshelf.length !== 0) {
-            // DBデータをBook型に変換
-            dbBooks = resBookshelf.map(resData => ({
-                isbn: resData.isbn,
-                isFavorite: false,
-                isInBookshelf: true,
-                finishedAt: resData.finishedAt ?? null,
-                rated: resData.isRated,
-                rating: resData.ratings.length > 0 ? resData.ratings[0].rating : null,
-                reviewTitle: resData.ratings.length > 0 ? resData.ratings[0].reviewTitle : null,
-                reviewContent: resData.ratings.length > 0 ? resData.ratings[0].reviewContent : null,
-            }));
-        }
 
         // お気に入り情報を取得
         const resFavorite = await prisma.favorite.findMany({
@@ -50,42 +40,25 @@ async function selectDbData(ndlData: myBook[]): Promise<myBook[]> {
                 isbn: { in: isbns },
             },
         });
-        if (!resFavorite || resFavorite.length !== 0) {
-            // ISBNをキーにしたマップを作成
-            const dbBooksMap = new Map(dbBooks.map(book => [book.isbn, book]));
 
-            // favoriteの情報を適用
-            resFavorite.forEach(favorite => {
-                const book = dbBooksMap.get(favorite.isbn);
-                if (book) {
-                    book.isFavorite = true;
-                } else {
-                    // ISBNがdbBooksに存在しない場合、新しいBookを追加
-                    dbBooks.push({
-                        isbn: favorite.isbn,
-                        isFavorite: true,
-                        isInBookshelf: false, 
-                        finishedAt: null,
-                        rated: false,
-                        rating: null,
-                        reviewTitle: null,
-                        reviewContent: null,
-                    });
-                }
-            });
-        }
+        // ndlDataをSearchedBook型に変換し、DB情報を統合
+        const searchedBook: SearchedBook[] = ndlData.map(book => {
+            // isbnに一致するresBookshelfのデータを取得（本棚に存在するかチェック）
+            const isInBookshelf = resBookshelf.some(bookshelf => bookshelf.isbn === book.isbn);
+            // isbnに一致するresFavoriteのデータを取得（お気に入りに存在するかチェック）
+            const isFavorite = resFavorite.some(fav => fav.isbn === book.isbn);
 
-        // ndlDataにresDbの情報を適用
-        for (const ndlBook of ndlData) {
-            const dbBook = dbBooks.find(book => book.isbn === ndlBook.isbn);
-            if (dbBook) {
-                Object.assign(ndlBook, dbBook);
-            }
-        }
-        return ndlData;
+            return {
+                ...book,
+                isInBookshelf,
+                isFavorite,
+            };
+        });
+
+        return searchedBook;
     } catch (e) {
         console.error("DB情報の検索中に予期せぬエラーが発生しました。:", e);
-        return ndlData;
+        return defaultSearchedBook;
     }
 
 }

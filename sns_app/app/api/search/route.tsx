@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { validationSearchSchemaIsbn, validationSearchSchemaDetails } from "app/utils/validationSchema";
-import { myBook, SearchForm } from "@/types/bookTypes";
+import { BaseBook, SearchedBook } from "@/types/bookTypes";
+import { SearchForm } from "@/types/formTypes";
 import { fetchNdlData } from "app/api/search/services/fetchNdlData";
 import { selectDbData, insertBookshelfData } from "app/api/search/services/fetchDbData";
 
@@ -41,7 +42,7 @@ async function GET(req: NextRequest) {
         }
 
         // NDL情報取得
-        const resNdlData: myBook[] = await fetchNdlData(searchForm);
+        const resNdlData: BaseBook[] = await fetchNdlData(searchForm);
         if (!resNdlData || resNdlData.length === 0) {
             return NextResponse.json(
                 { books: resNdlData },
@@ -49,11 +50,11 @@ async function GET(req: NextRequest) {
             );
         }
 
-        // DB情報取得
-        const booksOfDbData: myBook[] = await selectDbData(resNdlData);
+        // NDL情報を基にDB情報取得
+        const margedData: SearchedBook[] = await selectDbData(resNdlData);
 
         return NextResponse.json(
-            { books: booksOfDbData },
+            { books: margedData },
             { status: 200 },
         );
     } catch (e) {
