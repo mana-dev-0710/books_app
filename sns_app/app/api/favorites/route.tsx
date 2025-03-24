@@ -1,57 +1,42 @@
 import { NextRequest, NextResponse } from "next/server";
 import { validationSearchSchemaIsbn, validationSearchSchemaDetails } from "app/utils/validationSchema";
-import { BaseBook, SearchedBook } from "@/types/bookTypes";
+import { BaseBook, FavoriteBook } from "@/types/bookTypes";
 import { SearchForm } from "@/types/formTypes";
-import { fetchNdlData } from "app/api/search/services/fetchNdlData";
-import { selectDbData, insertBookshelfData } from "app/api/search/services/fetchDbData";
+import { fetchNdlData } from "app/api/favorites/services/fetchNdlData";
+import { selectDbData, deleteFavoriteData } from "app/api/favorites/services/fetchDbData";
 
-async function GET(req: NextRequest) {
+async function GET() {
 
-    const searchForm: SearchForm = {};
+    let books: FavoriteBook[] = [];
 
     try {
-        const { searchParams } = new URL(req.url);
-        searchForm.isbn = decodeURIComponent(searchParams.get("isbn") || "") || undefined;
-        searchForm.title = decodeURIComponent(searchParams.get("title") || "") || "";
-        searchForm.author = decodeURIComponent(searchParams.get("author") || "") || "";
-        searchForm.publisher = decodeURIComponent(searchParams.get("publisher") || "") || "";
-
-        //バリデーション
-        if (searchForm.isbn) {
-            const validationResultIsbn = await validationSearchSchemaIsbn.safeParseAsync({
-                isbn: searchForm.isbn
-            });
-            if (!validationResultIsbn.success) {
-                return NextResponse.json(
-                    { error: "バリデーションエラー" },  // TODO:項目ごとにエラーメッセージを返却？
-                    { status: 400 },
-                );
-            }
-        } else {
-            const validationResultDetails = await validationSearchSchemaDetails.safeParseAsync({
-                title: searchForm.title,
-                author: searchForm.author,
-                publisher: searchForm.publisher
-            });
-            if (!validationResultDetails.success) {
-                return NextResponse.json(
-                    { error: "バリデーションエラー" },  // TODO:項目ごとにエラーメッセージを返却？
-                    { status: 400 },
-                );
-            }
-        }
+        // DB情報取得
+        const booksOfDbData: FavoriteBook[] = await selectDbData();
 
         // NDL情報取得
-        const resNdlData: BaseBook[] = await fetchNdlData(searchForm);
-        if (!resNdlData || resNdlData.length === 0) {
-            return NextResponse.json(
-                { books: resNdlData },
-                { status: 200 },
-            );
-        }
+        for (let bookOfDbData of booksOfDbData) {
+            const searchForm: SearchForm = { isbn: bookOfDbData.isbn };
 
-        // DB情報取得
-        const booksOfDbData: SearchedBook[] = await selectDbData(resNdlData);
+            // NDL情報取得
+            const resNdlData: BaseBook[] = await fetchNdlData(searchForm);
+
+
+            if (resNdlData.length > 0) {
+                const ndlBook = resNdlData[0]; // ※ISBN検索のため、ndlから取得するBaseBookは1件
+
+                Object.assign(bookOfDbData, {
+                    title: ndlBook.title ?? bookOfDbData.title,
+                    volume: ndlBook.volume ?? bookOfDbData.volume,
+                    author: ndlBook.author ?? bookOfDbData.author,
+                    publisher: ndlBook.publisher ?? bookOfDbData.publisher,
+                    publicationDate: ndlBook.publicationDate ?? bookOfDbData.publicationDate,
+                    genre: ndlBook.genre ?? bookOfDbData.genre,
+                    jpeCode: ndlBook.jpeCode ?? bookOfDbData.jpeCode,
+                    imgUrl: ndlBook.imgUrl ?? bookOfDbData.imgUrl,
+                });
+            }
+        }
+        books = booksOfDbData;
 
         return NextResponse.json(
             { books: booksOfDbData },
@@ -63,33 +48,25 @@ async function GET(req: NextRequest) {
 
 }
 
-async function PUT(req: NextRequest) {
+async function DELETE(req: NextRequest) {
 
     try {
-        const reqUrl = new URL(req.url);
-        const isbn = reqUrl.searchParams.get("isbn");
-        if (!isbn) return NextResponse.json(
-            { error: "ISBNが不正です。" },
+        const { searchParams } = new URL(req.url);
+        const favoriteBookId = decodeURIComponent(searchParams.get("favoriteBookId") || "") || undefined;
+
+        if (!favoriteBookId) return NextResponse.json(
+            { error: "パラメーターエラー" }, 
             { status: 400 }
         );
 
-        //バリデーション
-        const validationResult = await validationSearchSchemaIsbn.safeParseAsync({ isbn });
-        if (!validationResult.success) {
-            return NextResponse.json(
-                { error: "バリデーションエラー" },
-                { status: 400 }
-            );
-        }
+        // DBにお気に入り情報を削除
+        await deleteFavoriteData(favoriteBookId);
 
-        // 本棚への登録
-        await insertBookshelfData(isbn);
-
-        return NextResponse.json({ status: 200 });
+        return NextResponse.json( { status: 200 } );
     } catch (e) {
-        return NextResponse.json({ status: 500 });
+        return NextResponse.json( { status: 500 } );
     }
 
 }
 
-export { GET, PUT };
+export { GET, DELETE };

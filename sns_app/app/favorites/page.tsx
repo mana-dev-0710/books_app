@@ -1,18 +1,15 @@
 'use client';
 
-import React, { useState, useEffect } from 'react'
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import Header from "components/layout/Header";
 import Sidebar from "components/layout/Sidebar";
 import Loading from "components/layout/Loading";
 import Title from "components/layout/Title";
-// import FavoriteBookList from "@/components/main/FavoriteBookList";
+import FavoriteBookList from "@/components/main/FavoriteBookList";
 
 const Favorite = () => {
 
-  const { data: session, status } = useSession();
-  const router = useRouter();
+  const { status } = useSession();
 
   // ローディングまたは未認証時にローディング画面を表示
   if (status === "loading" || status === "unauthenticated") {
@@ -34,7 +31,7 @@ const Favorite = () => {
             </div>
             <div className="min-w-full inline-block align-middle">
               <div className="overflow-x-auto border border-gray-200 rounded-md">
-                {/* <FavoriteBookList /> */}
+                <FavoriteBookList />
               </div>
             </div>
           </div>
