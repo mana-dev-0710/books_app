@@ -28,6 +28,7 @@ const Menu = () => {
             </button>
             <button
                 type="button"
+                onClick={() => router.push('/favorites')}
                 className={`${baseButtonClassName} ${pathname === '/favorites' ? activeClassName : 'hover:bg-gray-200'}`}
             >
                 お気に入り

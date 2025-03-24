@@ -7,7 +7,7 @@ import IsbnSearchForm from "components/main/IsbnSearchForm";
 import DetailsSearchForm from "components/main/DetailsSearchForm";
 import BookCard from "components/main/BookCard";
 import Title from "components/layout/Title";
-import { Book } from "@/types/bookshelf";
+import { SearchedBook } from "@/types/bookTypes";
 import ToastNotification from "@/components/common/ToastNotification";
 import { Tabs, Accordion } from 'flowbite-react';
 
@@ -24,7 +24,7 @@ type SearchError = {
 
 const Search = () => {
 
-    const [books, setBooks] = useState<Book[]>([]);
+    const [books, setBooks] = useState<SearchedBook[]>([]);
     const [searchForm, setSearchForm] = useState<SearchForm>({});
     const [searchError, setSearchError] = useState<SearchError>();
     const [toast, setToast] = useState<{ message: string; type: "success" | "error" | "info" } | null>(null);

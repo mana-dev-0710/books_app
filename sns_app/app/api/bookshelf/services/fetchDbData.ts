@@ -2,12 +2,12 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/authOptions";
 import { CustomSession } from "@/app/api/auth/[...nextauth]/route";
-import { Book } from "types/bookshelf";
+import { myBook } from "@/types/bookTypes";
 import prisma from "lib/Prisma";
 
-async function fetchDbData(): Promise<Book[]> {
+async function fetchDbData(): Promise<myBook[]> {
     
-    let books: Book[] = [];
+    let books: myBook[] = [];
 
     // セッションのユーザーIDを取得
     const session = await getServerSession(authOptions) as CustomSession;
@@ -19,7 +19,7 @@ async function fetchDbData(): Promise<Book[]> {
     const userId = session.user.id;
 
     // DB情報の取得処理
-    let resDb: Book[] = [];
+    let resDb: myBook[] = [];
     try {
         //TODO: 評価データの結合
         resDb = await prisma.bookshelf.findMany({

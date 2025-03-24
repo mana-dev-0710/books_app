@@ -1,11 +1,11 @@
-import { Book, SearchForm } from "types/bookshelf";
+import { myBook, SearchForm } from "@/types/bookTypes";
 import { parseXmlToJson, parseXmlToJsonByIsbn } from "lib/parseXml";
 import { getImageUrl } from "app/api/search/services/fetchNdlImgUrl";
 
 const maximumRecords = "50";
 
-async function fetchNdlData(searchForm: SearchForm): Promise<Book[]> {
-    let books: Book[] = [];
+async function fetchNdlData(searchForm: SearchForm): Promise<myBook[]> {
+    let books: myBook[] = [];
 
     const isbn = searchForm.isbn;
     const title = searchForm.title;

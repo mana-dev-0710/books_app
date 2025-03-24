@@ -1,14 +1,11 @@
 'use client';
 
 import React from 'react'
-import { useSession } from "next-auth/react";
-import Image from "next/image";
 import { useRouter } from 'next/navigation';
 import Profile from 'components/layout/Profile';
 
 const Sidebar = () => {
 
-  const { data: session, status } = useSession();
   const router = useRouter();
   return (
     <div className="w-full">
@@ -39,6 +36,7 @@ const Sidebar = () => {
           <li className="font-semibold">
             <button
               type="button"
+              onClick={() => router.push('/favorites')}
               className="inline-flex items-center gap-x-2 py-1 px-2 w-full justify-center rounded-md text-white bg-primary-400 hover:bg-primary-500 hover:shadow hover:shadow-gray"
             >
               お気に入り

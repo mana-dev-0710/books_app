@@ -4,20 +4,14 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Dropdown } from 'flowbite-react';
 import { Modal } from 'flowbite-react';
-import { Book } from "@/types/bookshelf"
+import { MyBook } from "@/types/bookTypes"
 
-const BookList = () => {
+const MyBookList = () => {
 
     const router = useRouter();
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [selectedBookId, setSelectedBookId] = useState<string | null>(null);
-    const [books, setBooks] = useState<Book[]>([
-        {
-            isbn: "",
-            finished: false,
-        },
-    ]);
-    const [isLoading, setIsLoading] = useState(true);
+    const [books, setBooks] = useState<MyBook[]>();
 
     // 検索処理
     const searchBookshelf = async () => {
@@ -210,4 +204,4 @@ const BookList = () => {
     );
 };
 
-export default BookList;
+export default MyBookList;

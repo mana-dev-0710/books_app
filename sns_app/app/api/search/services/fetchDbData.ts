@@ -1,10 +1,10 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/authOptions";
 import { CustomSession } from "@/app/api/auth/[...nextauth]/route";
-import { Book } from "types/bookshelf";
+import { myBook } from "@/types/bookTypes";
 import prisma from "@/lib/Prisma";
 
-async function selectDbData(ndlData: Book[]): Promise<Book[]> {
+async function selectDbData(ndlData: myBook[]): Promise<myBook[]> {
 
     // セッションのユーザーIDを取得
     const session = await getServerSession(authOptions) as CustomSession;
@@ -16,7 +16,7 @@ async function selectDbData(ndlData: Book[]): Promise<Book[]> {
 
     // DB情報の取得処理
     try {
-        let dbBooks: Book[] = [];
+        let dbBooks: myBook[] = [];
         const isbns = ndlData.map(book => book.isbn);
 
         // 本棚の書籍情報を取得

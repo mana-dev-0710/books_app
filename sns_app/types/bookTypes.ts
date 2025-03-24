@@ -1,4 +1,4 @@
-export type Book = {
+export type BaseBook = {
     isbn: string;
     title?: string;
     volume?: string;
@@ -8,8 +8,16 @@ export type Book = {
     genre?: string;
     jpeCode?: string;
     imgUrl?: string;
+};
+
+export type SearchedBook = BaseBook & {
     isFavorite: boolean;
     isInBookshelf: boolean;
+};
+
+export type MyBook = BaseBook & {
+    bookshelfId: string;
+    isFavorite: boolean;
     finishedAt?: Date | null;
     rated: boolean;
     rating?: number | null;
@@ -17,9 +25,8 @@ export type Book = {
     reviewContent? : string | null;
 };
 
-export type SearchForm = {
-    isbn?: string;
-    title?: string;
-    author?: string;
-    publisher?: string;
+export type FavoriteBook = BaseBook & {
+    favoriteBookId: string;
+    isInBookshelf: boolean;
 };
+
