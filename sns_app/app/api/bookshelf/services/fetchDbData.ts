@@ -61,4 +61,28 @@ async function fetchDbData(): Promise<MyBook[]> {
 
 }
 
-export { fetchDbData };
+async function deleteBookshelfData(bookshelfId: string) {
+
+
+    try {
+        // 書籍情報を削除
+        await prisma.bookshelf.delete({
+            where: {
+                id: bookshelfId,
+            },
+        });
+
+        // 評価情報を削除
+        await prisma.rating.delete({
+            where: {
+                bookshelfId,
+            },
+        });
+    } catch (e) {
+        console.error("データの削除中に予期せぬエラーが発生しました。:", e);
+    }
+
+}
+
+
+export { fetchDbData, deleteBookshelfData };

@@ -2,22 +2,23 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Dropdown } from 'flowbite-react';
-import { Modal } from 'flowbite-react';
+import { Dropdown, Rating, RatingStar } from 'flowbite-react';
+import BookshelfDetailModal from 'components/modals/BookshelfDetailModal';
+import BookshelfDeleteModal from 'components/modals/BookshelfDeleteModal';
 import { MyBook } from "@/types/bookTypes"
 
 const MyBookList = () => {
 
     const router = useRouter();
+    const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-    const [selectedBookId, setSelectedBookId] = useState<string | null>(null);
+    const [selectedBook, setSelectedBook] = useState<MyBook | null>(null);
     const [books, setBooks] = useState<MyBook[] | null>(null);
 
     // 検索処理
     const searchBookshelf = async () => {
 
         const res = await fetch('/api/bookshelf', { method: 'GET' });
-        console.log('res:', res);
         if (res.ok) {
             const resJson = await res.json();
             console.log('resData:', resJson);
@@ -45,31 +46,43 @@ const MyBookList = () => {
 
     }, [router]);
 
-    // モーダルを開く
-    const handleOpenDeleteModal = (bookId: string) => {
-        console.log("handleOpenDeleteModal execute.");
-        setSelectedBookId(bookId);
+    // 詳細モーダルを開く
+    const handleOpenDetailModal = (book: MyBook) => {
+        setSelectedBook(book);
+        setIsDetailModalOpen(true);
+    };
+
+    // 詳細モーダルを閉じる
+    const handleCloseDetailModal = () => {
+        setSelectedBook(null);
+        setIsDetailModalOpen(false);
+    };
+
+
+    // 削除モーダルを開く
+    const handleOpenDeleteModal = (book: MyBook) => {
+        setSelectedBook(book);
         setIsDeleteModalOpen(true);
     };
 
-    // モーダルを閉じる
+    // 削除モーダルを閉じる
     const handleCloseDeleteModal = () => {
-        setSelectedBookId(null);
+        setSelectedBook(null);
         setIsDeleteModalOpen(false);
     };
 
     // 編集処理
     const handleEditConfirm = async () => {
-        if (!selectedBookId) return;
+        if (!selectedBook) return;
 
         try {
-            const response = await fetch(`/api/books/${selectedBookId}`, {
+            const response = await fetch(`/api/books/${selectedBook}`, {
                 method: 'PUT',
             });
             if (response.ok) {
                 alert('編集が完了しました！');
                 handleCloseDeleteModal();
-                router.refresh();
+                await searchBookshelf();
             } else {
                 alert('編集に失敗しました。');
             }
@@ -81,16 +94,27 @@ const MyBookList = () => {
 
     // 削除処理
     const handleDeleteConfirm = async () => {
-        if (!selectedBookId) return;
+        if (!selectedBook) return;
 
         try {
-            const response = await fetch(`/api/books/${selectedBookId}`, {
-                method: 'DELETE',
+            let fetchUrl = '/api/bookshelf?';
+            const queryParams = new URLSearchParams();
+
+            queryParams.append("bookshelfId", selectedBook.bookshelfId);
+            queryParams.append("isbn", selectedBook.isbn);
+            fetchUrl += queryParams;
+
+            const res = await fetch(fetchUrl, {
+                method: "DELETE",
+                headers: {
+                    "Accept": "application/json",
+                    "Content-Type": "application/json; charset=UTF-8",
+                },
             });
-            if (response.ok) {
+            if (res.ok) {
                 alert('削除が完了しました！');
                 handleCloseDeleteModal();
-                router.refresh();
+                await searchBookshelf();
             } else {
                 alert('削除処理に失敗しました。');
             }
@@ -118,10 +142,10 @@ const MyBookList = () => {
                             <td className="px-3 py-2 whitespace-normal font-medium">
                                 マイ本棚を取得中...
                             </td>
-                            <th className="px-3 py-2 text-start"></th>
-                            <th className="hidden sm:table-cell px-3 py-2 text-start"></th>
-                            <th className="hidden sm:table-cell min-w-[4rem] px-3 py-2 text-start"></th>
-                            <th className="px-3 py-2 text-end"></th>
+                            <td className="px-3 py-2 text-start"></td>
+                            <td className="hidden sm:table-cell px-3 py-2 text-start"></td>
+                            <td className="hidden sm:table-cell min-w-[4rem] px-3 py-2 text-start"></td>
+                            <td className="px-3 py-2 text-end"></td>
                         </tr>
                     </tbody>
                 ) : books.length > 0 ? (
@@ -132,13 +156,19 @@ const MyBookList = () => {
                                 <td className="px-3 py-2 whitespace-nowrap">{book.volume}</td>
                                 <td className="hidden sm:table-cell px-3 py-1 whitespace-normal">{book.author}</td>
                                 <td className={`hidden sm:table-cell px-3 py-1 min-w-[4rem] whitespace-normal ${!book.rated ? 'text-gray-500' : ''}`}>
-                                    {book.rated ? book.rating : "未評価"}
+                                    {book.rated ?
+                                        <Rating>
+                                            <RatingStar className="text-yellow-400" />
+                                            <p>{book.rating}/5</p>
+                                        </Rating> :
+                                        "未評価"
+                                    }
                                 </td>
                                 <td className="px-3 py-1">
                                     <Dropdown inline={true} placement="bottom-end" className="btn btn-ghost btn-sm btn-circle">
-                                        <Dropdown.Item onClick={() => console.log("詳細")}>詳細</Dropdown.Item>
-                                        <Dropdown.Item onClick={() => handleEditConfirm()}>編集</Dropdown.Item>
-                                        <Dropdown.Item onClick={() => handleOpenDeleteModal("1")}>削除</Dropdown.Item>
+                                        <Dropdown.Item onClick={() => handleOpenDetailModal(book)}>詳細</Dropdown.Item>
+                                        <Dropdown.Item onClick={() => handleOpenDetailModal(book)}>編集</Dropdown.Item>
+                                        <Dropdown.Item onClick={() => handleOpenDeleteModal(book)}>削除</Dropdown.Item>
                                     </Dropdown>
                                 </td>
                             </tr>
@@ -148,56 +178,29 @@ const MyBookList = () => {
                     <tbody className="px-3 py-2 bg-white text-start text-sm text-gray-700">
                         <tr>
                             <td className="px-3 py-2 whitespace-normal font-medium">本棚に書籍がありません。</td>
+                            <td className="px-3 py-2 text-start"></td>
+                            <td className="hidden sm:table-cell px-3 py-2 text-start"></td>
+                            <td className="hidden sm:table-cell min-w-[4rem] px-3 py-2 text-start"></td>
+                            <td className="px-3 py-2 text-end"></td>
                         </tr>
                     </tbody>
                 )}
             </table>
-
-            <Modal
-                show={isDeleteModalOpen}
-                onClose={handleCloseDeleteModal}
+            <BookshelfDetailModal
+                isDetailModalOpen={isDetailModalOpen}
+                handleCloseDetailModal={handleCloseDetailModal}
                 className="flex items-center justify-center py-32 bg-gray-400 bg-opacity-60 text-xs"
                 size="md"
-            >
-                <div className="max-w-md w-full">
-                    <Modal.Header className="rounded-t-lg border-none border-x border-t">
-                        <div className="">
-                            <p className="text-sm font-semibold">以下データを本棚から削除します。</p>
-                            <p className="text-sm font-semibold">よろしいですか？</p>
-                            <p className="mt-1 text-xs">※この操作は元に戻せません。</p>
-                        </div>
-                    </Modal.Header>
-                    <Modal.Body className="px-5 py-4 border-x">
-                        <div className="p-4 border border-gray-400">
-                            <p className="mb-2 font-semibold text-sm border-b border-dashed">Hunter×hunterハンター×ハンター</p>
-                            <div className="flex justify-between mb-2">
-                                <p className="font-semibold">vol. 1</p>
-                                <p>ポール＝マッカートニ=アレキサンドロス</p>
-                            </div>
-                            <ul className="space-y-1">
-                                <li>出版社： 集英社</li>
-                                <li>発行日： 199806</li>
-                                <li>ジャンル： 漫画</li>
-                                <li>ISBN： 9784088725710</li>
-                            </ul>
-                        </div>
-                    </Modal.Body>
-                    <Modal.Footer className="flex items-center justify-center p-5 rounded-b-lg border-none border-x border-b">
-                        <button
-                            className="basis-1/2 py-1 px-3 mr-3 rounded-md hover:shadow hover:shadow-black border-2 border-gray-400"
-                            onClick={handleCloseDeleteModal}
-                        >
-                            キャンセル
-                        </button>
-                        <button
-                            className="basis-1/2 py-1 px-3 bg-secondary-400 hover:bg-secondary-500 rounded-md hover:shadow hover:shadow-black text-white border-2 border-secondary-400 hover:border-secondary-500"
-                            onClick={handleDeleteConfirm}
-                        >
-                            削除する
-                        </button>
-                    </Modal.Footer>
-                </div>
-            </Modal>
+                book={selectedBook}
+            />
+            <BookshelfDeleteModal
+                isDeleteModalOpen={isDeleteModalOpen}
+                handleCloseDeleteModal={handleCloseDeleteModal}
+                handleDeleteConfirm={handleDeleteConfirm}
+                className="flex items-center justify-center py-32 bg-gray-400 bg-opacity-60 text-xs"
+                size="md"
+                book={selectedBook}
+            />
         </>
     );
 };

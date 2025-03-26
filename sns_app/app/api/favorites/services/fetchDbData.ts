@@ -46,7 +46,6 @@ async function selectDbData(): Promise<FavoriteBook[]> {
                 isInBookshelf,
             };
         });
-        console.log("searchedBook:", searchedBook);
         return searchedBook;
     } catch (e) {
         console.error("DB情報の検索中に予期せぬエラーが発生しました。:", e);
@@ -55,53 +54,45 @@ async function selectDbData(): Promise<FavoriteBook[]> {
 
 }
 
-// async function insertBookshelfData(isbn: string) {
+async function insertBookshelfData(favoriteBookId: string) {
 
-//     // セッションのユーザーIDを取得
-//     const session = await getServerSession(authOptions) as CustomSession;
-//     if (!session || !session.user || !session.user.id) {
-//         console.error("認証情報エラー");
-//         return;
-//     }
-//     const userId = session.user.id;
+    // セッションのユーザーIDを取得
+    const session = await getServerSession(authOptions) as CustomSession;
+    if (!session || !session.user || !session.user.id) {
+        console.error("認証情報エラー");
+        return;
+    }
+    const userId = session.user.id;
 
-//     // 本棚へ登録
-//     try {
-//         await prisma.bookshelf.create({
-//             data: {
-//                 userId,
-//                 isbn,
-//             },
-//         });
-//     } catch (e) {
-//         console.error("本棚に登録中に予期せぬエラーが発生しました。:", e);
-//     }
+    try {
+        // isbnを取得
+        const resFavorite = await prisma.favorite.findUnique({
+            where: {
+                id: favoriteBookId,
+            },
+        });
+        if (!resFavorite || !resFavorite.isbn) {
+            console.error("お気に入り情報が存在しません。");
+            return;
+        }
+        if (userId !== resFavorite.userId) {
+            console.error("ユーザー情報が一致しません。");
+            return;
+        }
 
-// }
+        // 本棚へ登録
+        await prisma.bookshelf.create({
+            data: {
+                userId,
+                isbn: resFavorite.isbn,
+            },
+        });
 
-// async function insertFavoriteData(isbn: string) {
+    } catch (e) {
+        console.error("本棚に登録中に予期せぬエラーが発生しました。:", e);
+    }
 
-//     // セッションのユーザーIDを取得
-//     const session = await getServerSession(authOptions) as CustomSession;
-//     if (!session || !session.user || !session.user.id) {
-//         console.error("認証情報エラー");
-//         return;
-//     }
-//     const userId = session.user.id;
-
-//     // お気に入り情報登録処理
-//     try {
-//         await prisma.favorite.create({
-//             data: {
-//                 userId,
-//                 isbn,
-//             },
-//         });
-//     } catch (e) {
-//         console.error("お気に入りの削除中に予期せぬエラーが発生しました。:", e);
-//     }
-
-// }
+}
 
 async function deleteFavoriteData(favoriteBookId: string) {
 
@@ -118,4 +109,4 @@ async function deleteFavoriteData(favoriteBookId: string) {
 
 }
 
-export { selectDbData, deleteFavoriteData };
+export { selectDbData, insertBookshelfData, deleteFavoriteData };

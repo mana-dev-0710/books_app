@@ -6,7 +6,7 @@ import Icons from "components/icons/Icons";
 import { SearchedBook } from "@/types/bookTypes";
 import Loading from "components/layout/Loading";
 
-const defaultBookImage = '/images/default-book.png';
+const defaultBookImage = 'public/images/default-book.png';
 
 type SearchError = {
     message?: string;

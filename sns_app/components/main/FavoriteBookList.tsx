@@ -3,12 +3,14 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Dropdown } from 'flowbite-react';
-import { FavoriteBook, MyBook } from "@/types/bookTypes"
-import DeleteModal from "components/modals/DeleteModal"
+import { FavoriteBook } from "types/bookTypes"
+import Icons from "components/icons/Icons"
+import FavoriteDetailModal from "components/modals/FavoriteDetailModal"
+import FavoriteDeleteModal from "components/modals/FavoriteDeleteModal"
 
 const MyBookList = () => {
 
-    const router = useRouter();
+    const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [selectedBook, setSelectedBook] = useState<FavoriteBook | null>(null);
     const [books, setBooks] = useState<FavoriteBook[] | null>(null);
@@ -44,8 +46,19 @@ const MyBookList = () => {
     }, []);
 
     // モーダルを開く
+    const handleOpenDetailModal = (book: FavoriteBook) => {
+        setSelectedBook(book);
+        setIsDetailModalOpen(true);
+    };
+
+    // モーダルを閉じる
+    const handleCloseDetailModal = () => {
+        setSelectedBook(null);
+        setIsDetailModalOpen(false);
+    };
+
+    // モーダルを開く
     const handleOpenDeleteModal = (book: FavoriteBook) => {
-        console.log("handleOpenDeleteModal execute.");
         setSelectedBook(book);
         setIsDeleteModalOpen(true);
     };
@@ -56,23 +69,32 @@ const MyBookList = () => {
         setIsDeleteModalOpen(false);
     };
 
-    // 編集処理
-    const handleEditConfirm = async () => {
-        if (!selectedBook) return;
+    // 本棚追加処理
+    const handleAddToBookshelf = async (book: FavoriteBook) => {
+        if (!book) return;
 
         try {
-            const response = await fetch(`/api/books/${selectedBook.favoriteBookId}`, {
-                method: 'PUT',
+            let fetchUrl = '/api/favorites?';
+            const queryParams = new URLSearchParams();
+
+            queryParams.append("favoriteBookId", book.favoriteBookId);
+            fetchUrl += queryParams;
+            const res = await fetch(fetchUrl, {
+                method: "POST",
+                headers: {
+                    "Accept": "application/json",
+                    "Content-Type": "application/json; charset=UTF-8",
+                },
             });
-            if (response.ok) {
-                alert('編集が完了しました！');
-                handleCloseDeleteModal();
+
+            if (res.ok) {
+                alert('本棚の追加が完了しました！');//TODO:トーストにする
                 await searchFavorites();
             } else {
-                alert('編集に失敗しました。');
+                alert('本棚の追加処理に失敗しました。');
             }
         } catch (error) {
-            console.error('編集処理エラー:', error);
+            console.error('本棚の追加処理エラー:', error);
             alert('エラーが発生しました。');
         }
     };
@@ -126,10 +148,10 @@ const MyBookList = () => {
                             <td className="px-3 py-2 whitespace-normal font-medium">
                                 お気に入り書籍を取得中...
                             </td>
-                            <th className="px-3 py-2 text-start"></th>
-                            <th className="hidden sm:table-cell px-3 py-2 text-start"></th>
-                            <th className="hidden sm:table-cell min-w-[4rem] px-3 py-2 text-start"></th>
-                            <th className="px-3 py-2 text-end"></th>
+                            <td className="px-3 py-2 text-start"></td>
+                            <td className="hidden sm:table-cell px-3 py-2 text-start"></td>
+                            <td className="hidden sm:table-cell min-w-[4rem] px-3 py-2 text-start"></td>
+                            <td className="px-3 py-2 text-end"></td>
                         </tr>
                     </tbody>
                 ) : books.length > 0 ? (
@@ -140,13 +162,21 @@ const MyBookList = () => {
                                 <td className="px-3 py-2 whitespace-nowrap">{book.volume}</td>
                                 <td className="hidden sm:table-cell px-3 py-1 whitespace-normal">{book.author}</td>
                                 <td className={`hidden sm:table-cell px-3 py-1 min-w-[4rem] whitespace-normal ${!book.isInBookshelf ? 'text-gray-500' : ''}`}>
-                                    {book.isInBookshelf ? "保存済み" : "未保存"}
+                                    {book.isInBookshelf ?
+                                        <div className="flex items-center">
+                                            保存済み<Icons name="isInBookshelf" className="w-5 text-primary-400" />
+                                        </div>
+                                        : "未保存"
+                                    }
                                 </td>
                                 <td className="px-3 py-1">
                                     <Dropdown inline={true} placement="bottom-end" className="btn btn-ghost btn-sm btn-circle">
-                                        <Dropdown.Item onClick={() => console.log("詳細")}>詳細</Dropdown.Item>
-                                        <Dropdown.Item onClick={() => handleEditConfirm()}>編集</Dropdown.Item>
+                                        <Dropdown.Item onClick={() => handleOpenDetailModal(book)}>詳細</Dropdown.Item>
                                         <Dropdown.Item onClick={() => handleOpenDeleteModal(book)}>削除</Dropdown.Item>
+                                        {book.isInBookshelf ?
+                                            <></>
+                                            : <Dropdown.Item onClick={() => handleAddToBookshelf(book)}>本棚追加</Dropdown.Item>
+                                        }
                                     </Dropdown>
                                 </td>
                             </tr>
@@ -155,12 +185,23 @@ const MyBookList = () => {
                 ) : (
                     <tbody className="px-3 py-2 bg-white text-start text-sm text-gray-700">
                         <tr>
-                            <td className="px-3 py-2 whitespace-normal font-medium">本棚に書籍がありません。</td>
+                            <td className="px-3 py-2 whitespace-normal font-medium">お気に入り書籍がありません。</td>
+                            <td className="px-3 py-2 text-start"></td>
+                            <td className="hidden sm:table-cell px-3 py-2 text-start"></td>
+                            <td className="hidden sm:table-cell min-w-[4rem] px-3 py-2 text-start"></td>
+                            <td className="px-3 py-2 text-end"></td>
                         </tr>
                     </tbody>
                 )}
             </table>
-            <DeleteModal
+            <FavoriteDetailModal
+                isDetailModalOpen={isDetailModalOpen}
+                handleCloseDetailModal={handleCloseDetailModal}
+                className="flex items-center justify-center py-32 bg-gray-400 bg-opacity-60 text-xs"
+                size="md"
+                book={selectedBook}
+            />
+            <FavoriteDeleteModal
                 isDeleteModalOpen={isDeleteModalOpen}
                 handleCloseDeleteModal={handleCloseDeleteModal}
                 handleDeleteConfirm={handleDeleteConfirm}

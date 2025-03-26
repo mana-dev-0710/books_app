@@ -2,9 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { BaseBook, MyBook } from "types/bookTypes";
 import { SearchForm } from "types/formTypes";
 import { fetchNdlData } from "app/api/search/services/fetchNdlData";
-import { fetchDbData } from "app/api/bookshelf/services/fetchDbData";
+import { fetchDbData, deleteBookshelfData } from "app/api/bookshelf/services/fetchDbData";
 
-export async function GET(req: NextRequest) {
+async function GET(req: NextRequest) {
 
   let books: MyBook[] = [];
 
@@ -42,5 +42,28 @@ export async function GET(req: NextRequest) {
   }
 
 }
+
+async function DELETE(req: NextRequest) {
+
+  try {
+      const { searchParams } = new URL(req.url);
+      const bookshelfId = decodeURIComponent(searchParams.get("bookshelfId") || "") || undefined;
+
+      if (!bookshelfId) return NextResponse.json(
+          { error: "パラメーターエラー" }, 
+          { status: 400 }
+      );
+
+      // DBのマイ書籍情報を削除
+      await deleteBookshelfData(bookshelfId);
+
+      return NextResponse.json( { status: 200 } );
+  } catch (e) {
+      return NextResponse.json( { status: 500 } );
+  }
+
+}
+
+export { GET, DELETE };
 
 

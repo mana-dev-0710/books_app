@@ -3,7 +3,7 @@ import { validationSearchSchemaIsbn, validationSearchSchemaDetails } from "app/u
 import { BaseBook, FavoriteBook } from "@/types/bookTypes";
 import { SearchForm } from "@/types/formTypes";
 import { fetchNdlData } from "app/api/favorites/services/fetchNdlData";
-import { selectDbData, deleteFavoriteData } from "app/api/favorites/services/fetchDbData";
+import { selectDbData, deleteFavoriteData, insertBookshelfData } from "app/api/favorites/services/fetchDbData";
 
 async function GET() {
 
@@ -48,6 +48,27 @@ async function GET() {
 
 }
 
+async function POST(req: NextRequest) {
+
+    try {
+        const { searchParams } = new URL(req.url);
+        const favoriteBookId = decodeURIComponent(searchParams.get("favoriteBookId") || "") || undefined;
+
+        if (!favoriteBookId) return NextResponse.json(
+            { error: "パラメーターエラー" }, 
+            { status: 400 }
+        );
+
+        // 本棚情報を追加
+        await insertBookshelfData(favoriteBookId);
+
+        return NextResponse.json( { status: 200 } );
+    } catch (e) {
+        return NextResponse.json( { status: 500 } );
+    }
+
+}
+
 async function DELETE(req: NextRequest) {
 
     try {
@@ -59,7 +80,7 @@ async function DELETE(req: NextRequest) {
             { status: 400 }
         );
 
-        // DBにお気に入り情報を削除
+        // お気に入り情報を削除
         await deleteFavoriteData(favoriteBookId);
 
         return NextResponse.json( { status: 200 } );
@@ -69,4 +90,4 @@ async function DELETE(req: NextRequest) {
 
 }
 
-export { GET, DELETE };
+export { GET, POST, DELETE };
