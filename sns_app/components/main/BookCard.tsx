@@ -3,10 +3,10 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import Icons from "components/icons/Icons";
-import { Book } from "@/types/bookshelf";
+import { SearchedBook } from "@/types/bookTypes";
 import Loading from "components/layout/Loading";
 
-const defaultBookImage = '/images/default-book.png';
+const defaultBookImage = 'public/images/default-book.png';
 
 type SearchError = {
     message?: string;
@@ -18,7 +18,7 @@ type Toast = {
 };
 
 type BookCardProp = {
-    book: Book;
+    book: SearchedBook;
     setToast: React.Dispatch<React.SetStateAction<Toast | null>>;
     setError: React.Dispatch<React.SetStateAction<SearchError | undefined>>;
 };

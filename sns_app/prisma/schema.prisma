@@ -77,7 +77,7 @@ model Bookshelf {
 model Rating {
   id              String   @id @default(uuid())
   userId          String
-  bookshelfId     String
+  bookshelfId     String　　@unique
   rating          Int      // 1 ~ 5 点
   reviewTitle     String
   reviewContent   String?
@@ -86,8 +86,6 @@ model Rating {
 
   user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   bookshelf     Bookshelf     @relation(fields: [bookshelfId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, bookshelfId])
 }
 
 model Favorite {

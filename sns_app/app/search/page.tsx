@@ -1,13 +1,16 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import Header from "components/layout/Header";
 import Sidebar from "components/layout/Sidebar";
+import Loading from "components/layout/Loading";
 import IsbnSearchForm from "components/main/IsbnSearchForm";
 import DetailsSearchForm from "components/main/DetailsSearchForm";
 import BookCard from "components/main/BookCard";
 import Title from "components/layout/Title";
-import { Book } from "@/types/bookshelf";
+import { SearchedBook } from "@/types/bookTypes";
 import ToastNotification from "@/components/common/ToastNotification";
 import { Tabs, Accordion } from 'flowbite-react';
 
@@ -24,11 +27,25 @@ type SearchError = {
 
 const Search = () => {
 
-    const [books, setBooks] = useState<Book[]>([]);
+    const { data: session, status } = useSession();
+    const router = useRouter();
+    const [books, setBooks] = useState<SearchedBook[]>([]);
     const [searchForm, setSearchForm] = useState<SearchForm>({});
     const [searchError, setSearchError] = useState<SearchError>();
     const [toast, setToast] = useState<{ message: string; type: "success" | "error" | "info" } | null>(null);
     const [activeTab, setActiveTab] = useState<'isbn' | 'details'>('isbn');
+
+    useEffect(() => {
+        if (status === "unauthenticated") {
+            // ローディング中に画面が表示されないよう、pushではなくreplaceを使用
+            router.replace("/login");
+        }
+    }, [status, router]);
+
+    // ローディングまたは未認証時にローディング画面を表示
+    if (status === "loading" || status === "unauthenticated") {
+        return <Loading className="h-screen flex justify-center items-center bg-secondary-50" />
+    }
 
     //searchFormを監視し、変更があれば検索を実行
     useEffect(() => {
@@ -64,7 +81,7 @@ const Search = () => {
                     queryParams.append("publisher", data.publisher);
                 }
             }
-            fetchUrl += queryParams; 
+            fetchUrl += queryParams;
             console.log("fetchUrl:", fetchUrl);
             const res = await fetch(fetchUrl, {
                 method: "GET",

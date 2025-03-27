@@ -1,15 +1,15 @@
 'use client';
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react';
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Header from "components/layout/Header";
 import Sidebar from "components/layout/Sidebar";
 import Loading from "components/layout/Loading";
 import Title from "components/layout/Title";
-import MyBookList from "@/components/main/MyBookList";
+import FavoriteBookList from "@/components/main/FavoriteBookList";
 
-const Bookshelf = () => {
+const Favorite = () => {
 
   const { data: session, status } = useSession();
   const router = useRouter();
@@ -37,11 +37,11 @@ const Bookshelf = () => {
           {/* TODO:テーブル部分調整、ヘッダー部にフィルター機能追加（以下、仮） */}
           <div className="flex flex-col px-5 py-3">
             <div className="pt-2 pb-1 font-semibold">
-              <Title titleName="マイ本棚" />
+              <Title titleName="お気に入り" />
             </div>
             <div className="min-w-full inline-block align-middle">
               <div className="overflow-x-auto border border-gray-200 rounded-md">
-                <MyBookList />
+                <FavoriteBookList />
               </div>
             </div>
           </div>
@@ -51,4 +51,4 @@ const Bookshelf = () => {
   );
 }
 
-export default Bookshelf;
+export default Favorite;
