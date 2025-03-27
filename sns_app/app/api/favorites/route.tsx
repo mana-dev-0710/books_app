@@ -7,8 +7,6 @@ import { selectDbData, deleteFavoriteData, insertBookshelfData } from "app/api/f
 
 async function GET() {
 
-    let books: FavoriteBook[] = [];
-
     try {
         // DB情報取得
         const booksOfDbData: FavoriteBook[] = await selectDbData();
@@ -36,7 +34,6 @@ async function GET() {
                 });
             }
         }
-        books = booksOfDbData;
 
         return NextResponse.json(
             { books: booksOfDbData },

@@ -4,6 +4,7 @@ import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import prisma from "@/lib/Prisma";
 import { Session } from "next-auth";
 import { JWT } from "next-auth/jwt";
+import { FavoriteBook, MyBook } from "@/types/bookTypes";
 
 export interface CustomSession extends Session {
   user: {
@@ -11,11 +12,15 @@ export interface CustomSession extends Session {
     name?: string | null;
     email?: string | null;
     image?: string | null;
+    bookshelfSearchResults?: MyBook[];
+    favoriteSearchResults?: FavoriteBook[];
   };
 }
 
 interface CustomToken extends JWT {
   id?: string;
+  bookshelfSearchResults?: MyBook[];
+  favoriteSearchResults?: FavoriteBook[];
 }
 
 export const authOptions: NextAuthOptions = {
@@ -59,6 +64,8 @@ export const authOptions: NextAuthOptions = {
         user: {
           ...session.user,
           id: token.id ?? null, 
+          bookshelfSearchResults: token.bookshelfSearchResults ?? [],
+          favoriteSearchResults: token.favoriteSearchResults ?? [],
         },
       };
     },
