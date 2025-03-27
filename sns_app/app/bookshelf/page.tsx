@@ -16,7 +16,7 @@ const Bookshelf = () => {
 
   useEffect(() => {
     if (status === "unauthenticated") {
-      // ローディング中にbookshelf画面が表示されないよう、pushではなくreplaceを使用
+      // ローディング中に画面が表示されないよう、pushではなくreplaceを使用
       router.replace("/login");
     }
   }, [status, router]);

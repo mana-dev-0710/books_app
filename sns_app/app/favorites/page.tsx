@@ -1,6 +1,8 @@
 'use client';
 
+import React, { useState, useEffect } from 'react';
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import Header from "components/layout/Header";
 import Sidebar from "components/layout/Sidebar";
 import Loading from "components/layout/Loading";
@@ -9,7 +11,15 @@ import FavoriteBookList from "@/components/main/FavoriteBookList";
 
 const Favorite = () => {
 
-  const { status } = useSession();
+  const { data: session, status } = useSession();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      // ローディング中に画面が表示されないよう、pushではなくreplaceを使用
+      router.replace("/login");
+    }
+  }, [status, router]);
 
   // ローディングまたは未認証時にローディング画面を表示
   if (status === "loading" || status === "unauthenticated") {
