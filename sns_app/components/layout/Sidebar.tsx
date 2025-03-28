@@ -19,14 +19,6 @@ const Sidebar = () => {
           <li className="font-semibold">
             <button
               type="button"
-              className="inline-flex items-center gap-x-2 py-1 px-2 w-full justify-center rounded-md text-white bg-primary-400 hover:bg-primary-500 hover:shadow hover:shadow-gray"
-            >
-              プロフィール
-            </button>
-          </li>
-          <li className="font-semibold">
-            <button
-              type="button"
               onClick={() => router.push('/search')}
               className="inline-flex items-center gap-x-2 py-1 px-2 w-full justify-center rounded-md text-white bg-primary-400 hover:bg-primary-500 hover:shadow hover:shadow-gray"
             >
@@ -56,9 +48,17 @@ const Sidebar = () => {
               type="button"
               className="inline-flex items-center gap-x-2 py-1 px-2 w-full justify-center rounded-md text-white bg-primary-400 hover:bg-primary-500 hover:shadow hover:shadow-gray"
             >
-              プログレッション
+              プロフィール
             </button>
           </li>
+          {/* <li className="font-semibold">
+            <button
+              type="button"
+              className="inline-flex items-center gap-x-2 py-1 px-2 w-full justify-center rounded-md text-white bg-primary-400 hover:bg-primary-500 hover:shadow hover:shadow-gray"
+            >
+              プログレッション
+            </button>
+          </li> */}
         </ul>
       </div>
     </div>

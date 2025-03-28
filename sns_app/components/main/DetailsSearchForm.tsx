@@ -7,6 +7,7 @@ import { validationSearchSchemaDetails } from "app/utils/validationSchema";
 
 type DetailsSearchFormProps = {
     setSearchForm: (data: any) => void;
+    searchBooks: (data: any) => void;
 };
 
 type SearchFormOfDetails = {
@@ -15,7 +16,7 @@ type SearchFormOfDetails = {
     publisher?: string;
 }
 
-const DetailsSearchForm: React.FC<DetailsSearchFormProps> = ({ setSearchForm }) => {
+const DetailsSearchForm: React.FC<DetailsSearchFormProps> = ({ setSearchForm, searchBooks }) => {
 
     const {
         register,
@@ -28,6 +29,7 @@ const DetailsSearchForm: React.FC<DetailsSearchFormProps> = ({ setSearchForm }) 
 
     const setForm = (data: SearchFormOfDetails) => {
         setSearchForm(data);
+        searchBooks(data);
     };
 
     return (
