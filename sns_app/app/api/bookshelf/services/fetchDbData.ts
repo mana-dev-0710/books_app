@@ -1,9 +1,10 @@
 
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/authOptions";
-import { CustomSession } from "@/app/api/auth/[...nextauth]/route";
+import { CustomSession } from "@/app/api/auth/[...nextauth]/authOptions";
 import { MyBook } from "types/bookTypes";
 import prisma from "lib/Prisma";
+import { parseTypes } from "app/utils/parseTypes";
 
 async function fetchDbData(): Promise<MyBook[]> {
 
@@ -45,7 +46,8 @@ async function fetchDbData(): Promise<MyBook[]> {
                 bookshelfId: book.id,
                 isFavorite: isFavorite,
                 rated: book.isRated,
-                finishedAt: book.finishedAt ?? null,
+                finishedReading: book.finishedReading,
+                finishedAt: book.finishedAt ? parseTypes(book.finishedAt) : null,
                 rating: book.ratings.length > 0 ? book.ratings[0].rating : null,
                 reviewTitle: book.ratings.length > 0 ? book.ratings[0].reviewTitle : null,
                 reviewContent: book.ratings.length > 0 ? book.ratings[0].reviewContent : null,

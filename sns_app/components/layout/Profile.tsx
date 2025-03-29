@@ -26,20 +26,20 @@ const Profile = ({ className, imageClassName }: ProfileProp) => {
                     priority
                     className={`${imageClassName}`}
                 />
-                <div className="mt-1 text-center text-sm sm:text-base font-semibold">
+                <div className="mt-1 text-center text-sm font-semibold">
                     {session?.user?.name}
                 </div>
             </div>
             <div className="relative p-2 ml-5 lg:ml-0">
                 <ul className="grid grid-cols-2 gap-2 text-xs sm:text-sm">
                     <li className="col-span-2 mt-1">読書冊数：
-                        <p className="inline-block text-sm sm:text-base lg:text-sm font-bold">50</p> 冊
+                        <p className="inline-block text-sm lg:text-xs font-bold">50</p> 冊
                     </li>
                     <li className="col-span-2">読書ページ数：
-                        <p className="inline-block text-sm sm:text-base lg:text-sm font-bold">3,000</p> p
+                        <p className="inline-block text-sm lg:text-xs font-bold">3,000</p> p
                     </li>
                     <li className="col-span-2">評価冊数：
-                        <p className="inline-block text-sm sm:text-base lg:text-sm font-bold">50</p> 冊
+                        <p className="inline-block text-sm lg:text-xs font-bold">50</p> 冊
                     </li>
                 </ul>
             </div>

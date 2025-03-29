@@ -9,7 +9,7 @@ const Menu = () => {
     const pathname = usePathname();
 
     // ボタン共通クラス
-    const baseButtonClassName = "px-6 py-2 text-left transition-colors duration-300";
+    const baseButtonClassName = "px-6 py-3 text-left text-sm transition-colors duration-300";
     // 現在のページが一致する場合に追加するクラス
     const activeClassName = "bg-primary-200";
 
