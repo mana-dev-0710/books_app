@@ -47,17 +47,8 @@ const Search = () => {
         return <Loading className="h-screen flex justify-center items-center bg-secondary-50" />
     }
 
-    //searchFormを監視し、変更があれば検索を実行
-    useEffect(() => {
-        if (searchForm.isbn || searchForm.title || searchForm.author || searchForm.publisher) {
-            searchBooks(searchForm);
-        }
-    }, [searchForm]);
-
     // 書籍検索の処理
     const searchBooks = async (data: SearchForm) => {
-        console.log("---searchBooks start---");
-        console.log("data: ", data);
 
         setBooks([]);
         setSearchError(undefined);
@@ -136,10 +127,10 @@ const Search = () => {
                                     }}
                                 >
                                     <Tabs.Item title="ISBN検索" active={activeTab === 'isbn'}>
-                                        <IsbnSearchForm setSearchForm={setSearchForm} />
+                                        <IsbnSearchForm setSearchForm={setSearchForm} searchBooks={searchBooks} />
                                     </Tabs.Item>
                                     <Tabs.Item title="詳細検索" active={activeTab === 'details'}>
-                                        <DetailsSearchForm setSearchForm={setSearchForm} />
+                                        <DetailsSearchForm setSearchForm={setSearchForm} searchBooks={searchBooks} />
                                     </Tabs.Item>
                                 </Tabs>
                             </div>

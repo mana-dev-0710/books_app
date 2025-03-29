@@ -18,7 +18,8 @@ export type SearchedBook = BaseBook & {
 export type MyBook = BaseBook & {
     bookshelfId: string;
     isFavorite: boolean;
-    finishedAt?: Date | null;
+    finishedReading: boolean;
+    finishedAt?: string | null;
     rated: boolean;
     rating?: number | null;
     reviewTitle? : string | null;

@@ -1,6 +1,6 @@
 import { BaseBook } from "@/types/bookTypes";
 import { SearchForm } from "@/types/formTypes";
-import { parseXmlToJson, parseXmlToJsonByIsbn } from "lib/parseXml";
+import { parseXmlToJson, parseXmlToJsonByIsbn } from "@/app/utils/parseXml";
 import { getImageUrl } from "app/api/search/services/fetchNdlImgUrl";
 
 const maximumRecords = "50";

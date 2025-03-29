@@ -39,7 +39,7 @@ const BookshelfDetailModal: React.FC<BookshelfDetailModalProp> = ({
         ) : (
           <>
             <ModalHeader className="flex items-center rounded-t-lg border-none border-x border-t">
-              <p className="text-sm font-semibold">書籍の詳細情報</p>
+              <p className="text-sm font-semibold">書籍情報の詳細</p>
             </ModalHeader>
             <ModalBody className="px-5 py-3 border-x">
               <div className="p-4 border border-gray-400">

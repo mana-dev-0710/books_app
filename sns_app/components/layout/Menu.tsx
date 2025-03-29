@@ -9,14 +9,14 @@ const Menu = () => {
     const pathname = usePathname();
 
     // ボタン共通クラス
-    const baseButtonClassName = "px-6 py-4 text-left transition-colors duration-300";
+    const baseButtonClassName = "px-6 py-3 text-left text-sm transition-colors duration-300";
     // 現在のページが一致する場合に追加するクラス
-    const activeClassName = "bg-primary-200 border-l-8 border-primary-500";
+    const activeClassName = "bg-primary-200";
 
     return (
         <div className="flex flex-col w-screen text-sm sm:text-base">
             <Profile
-                className={"flex p-4"}
+                className={"flex justify-start px-5 lg:px-4 py-3 border-b-2 border-gray-200"}
                 imageClassName={"rounded-full border border-2 border-gray-200"}
             />
             <button
@@ -41,10 +41,16 @@ const Menu = () => {
             </button>
             <button
                 type="button"
+                className={`${baseButtonClassName} ${pathname === '/' ? activeClassName : 'hover:bg-gray-200'}`}
+            >
+                プロフィール
+            </button>
+            {/* <button
+                type="button"
                 className={`${baseButtonClassName} ${pathname === '/progression' ? activeClassName : 'hover:bg-gray-200'}`}
             >
                 プログレッション
-            </button>
+            </button> */}
         </div>
     );
 };

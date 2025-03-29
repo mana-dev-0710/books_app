@@ -7,13 +7,14 @@ import { validationSearchSchemaIsbn } from "app/utils/validationSchema";
 
 type IsbnSearchFormProps = {
   setSearchForm: (data: any) => void;
+  searchBooks: (data: any) => void;
 };
 
 type SearchFormOfIsbn = {
   isbn: string;
 }
 
-const IsbnSearchForm: React.FC<IsbnSearchFormProps> = ({ setSearchForm }) => {
+const IsbnSearchForm: React.FC<IsbnSearchFormProps> = ({ setSearchForm, searchBooks }) => {
 
   const {
     register,
@@ -26,6 +27,7 @@ const IsbnSearchForm: React.FC<IsbnSearchFormProps> = ({ setSearchForm }) => {
 
   const setForm = (data: SearchFormOfIsbn) => {
     setSearchForm(data);
+    searchBooks(data);
   };
 
   return (

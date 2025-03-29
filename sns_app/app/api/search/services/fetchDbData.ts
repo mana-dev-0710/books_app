@@ -1,6 +1,6 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/authOptions";
-import { CustomSession } from "@/app/api/auth/[...nextauth]/route";
+import { CustomSession } from "@/app/api/auth/[...nextauth]/authOptions";
 import { BaseBook, SearchedBook } from "@/types/bookTypes";
 import prisma from "@/lib/Prisma";
 

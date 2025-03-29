@@ -4,13 +4,16 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Dropdown, Rating, RatingStar } from 'flowbite-react';
 import BookshelfDetailModal from 'components/modals/BookshelfDetailModal';
+import BookshelfEditModal from 'components/modals/BookshelfEditModal';
 import BookshelfDeleteModal from 'components/modals/BookshelfDeleteModal';
+import Icons from "components/icons/Icons"
 import { MyBook } from "@/types/bookTypes"
 
 const MyBookList = () => {
 
     const router = useRouter();
     const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [selectedBook, setSelectedBook] = useState<MyBook | null>(null);
     const [books, setBooks] = useState<MyBook[] | null>(null);
@@ -58,6 +61,17 @@ const MyBookList = () => {
         setIsDetailModalOpen(false);
     };
 
+    // 編集モーダルを開く
+    const handleOpenEditModal = (book: MyBook) => {
+        setSelectedBook(book);
+        setIsEditModalOpen(true);
+    };
+
+    // 編集モーダルを閉じる
+    const handleCloseEditModal = () => {
+        setSelectedBook(null);
+        setIsEditModalOpen(false);
+    };
 
     // 削除モーダルを開く
     const handleOpenDeleteModal = (book: MyBook) => {
@@ -76,12 +90,19 @@ const MyBookList = () => {
         if (!selectedBook) return;
 
         try {
-            const response = await fetch(`/api/books/${selectedBook}`, {
+            let fetchUrl = '/api/bookshelf?';
+            const queryParams = new URLSearchParams();
+
+            queryParams.append("bookshelfId", selectedBook.bookshelfId);
+            queryParams.append("isbn", selectedBook.isbn);
+            fetchUrl += queryParams;
+
+            const response = await fetch(fetchUrl, {
                 method: 'PUT',
             });
             if (response.ok) {
                 alert('編集が完了しました！');
-                handleCloseDeleteModal();
+                handleCloseEditModal();
                 await searchBookshelf();
             } else {
                 alert('編集に失敗しました。');
@@ -132,6 +153,7 @@ const MyBookList = () => {
                         <th className="px-3 py-2 text-start">書籍タイトル</th>
                         <th className="px-3 py-2 text-start">vol.</th>
                         <th className="hidden sm:table-cell px-3 py-2 text-start">作者</th>
+                        <th className="hidden sm:table-cell min-w-[4rem] px-3 py-2 text-start">読了</th>
                         <th className="hidden sm:table-cell min-w-[4rem] px-3 py-2 text-start">評価</th>
                         <th className="px-3 py-2 text-end"></th>
                     </tr>
@@ -155,6 +177,15 @@ const MyBookList = () => {
                                 <td className="px-3 py-2 whitespace-normal font-medium">{book.title}</td>
                                 <td className="px-3 py-2 whitespace-nowrap">{book.volume}</td>
                                 <td className="hidden sm:table-cell px-3 py-1 whitespace-normal">{book.author}</td>
+                                <td className={`hidden sm:table-cell px-3 py-1 min-w-[7rem] whitespace-normal ${!book.finishedReading ? 'text-gray-500' : ''}`}>
+                                    {book.finishedReading ?
+                                        <div className="flex items-center">
+                                            <Icons name="isInBookshelf" className="w-5 text-primary-400" />
+                                            <p>{book.finishedAt}</p>
+                                        </div>
+                                        : "未読"
+                                    }
+                                </td>
                                 <td className={`hidden sm:table-cell px-3 py-1 min-w-[4rem] whitespace-normal ${!book.rated ? 'text-gray-500' : ''}`}>
                                     {book.rated ?
                                         <Rating>
@@ -167,7 +198,7 @@ const MyBookList = () => {
                                 <td className="px-3 py-1">
                                     <Dropdown inline={true} placement="bottom-end" className="btn btn-ghost btn-sm btn-circle">
                                         <Dropdown.Item onClick={() => handleOpenDetailModal(book)}>詳細</Dropdown.Item>
-                                        <Dropdown.Item onClick={() => handleOpenDetailModal(book)}>編集</Dropdown.Item>
+                                        <Dropdown.Item onClick={() => handleOpenEditModal(book)}>編集</Dropdown.Item>
                                         <Dropdown.Item onClick={() => handleOpenDeleteModal(book)}>削除</Dropdown.Item>
                                     </Dropdown>
                                 </td>
@@ -189,6 +220,14 @@ const MyBookList = () => {
             <BookshelfDetailModal
                 isDetailModalOpen={isDetailModalOpen}
                 handleCloseDetailModal={handleCloseDetailModal}
+                className="flex items-center justify-center py-32 bg-gray-400 bg-opacity-60 text-xs"
+                size="md"
+                book={selectedBook}
+            />
+            <BookshelfEditModal
+                isEditModalOpen={isEditModalOpen}
+                handleCloseEditModal={handleCloseEditModal}
+                handleEditConfirm={handleEditConfirm}
                 className="flex items-center justify-center py-32 bg-gray-400 bg-opacity-60 text-xs"
                 size="md"
                 book={selectedBook}
