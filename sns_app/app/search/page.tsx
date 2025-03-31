@@ -73,7 +73,7 @@ const Search = () => {
                 }
             }
             fetchUrl += queryParams;
-            console.log("fetchUrl:", fetchUrl);
+       
             const res = await fetch(fetchUrl, {
                 method: "GET",
                 headers: {

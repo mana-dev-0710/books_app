@@ -19,11 +19,8 @@ const MyBookList = () => {
     const searchFavorites = async () => {
 
         const res = await fetch('/api/favorites', { method: 'GET' });
-        console.log('res:', res);
         if (res.ok) {
             const resJson = await res.json();
-            console.log('resData:', resJson);
-
             setBooks(resJson.books);
         } else {
             alert('検索処理に失敗しました。');
