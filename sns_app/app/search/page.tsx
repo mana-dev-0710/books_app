@@ -12,7 +12,7 @@ import BookCard from "components/main/BookCard";
 import Title from "components/layout/Title";
 import { SearchedBook } from "@/types/bookTypes";
 import ToastNotification from "@/components/common/ToastNotification";
-import { Tabs, Accordion } from 'flowbite-react';
+import { Tabs } from 'flowbite-react';
 
 type SearchForm = {
     isbn?: string;
