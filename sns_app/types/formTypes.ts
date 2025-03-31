@@ -4,3 +4,14 @@ export type SearchForm = {
     author?: string;
     publisher?: string;
 };
+
+export type BookshelfEditForm = {
+    bookshelfId: string;
+    finishedReading: boolean;
+    readingStatus: string;
+    finishedAt?: string | null;
+    isRated: boolean;
+    reviewTitle?: string | null;
+    rating?: string | null;
+    reviewContent?: string | null;
+}

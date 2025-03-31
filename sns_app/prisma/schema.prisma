@@ -78,7 +78,7 @@ model Rating {
   id              String   @id @default(uuid())
   userId          String
   bookshelfId     String　　@unique
-  rating          Int      // 1 ~ 5 点
+  rating          String   // 1 ~ 5 点
   reviewTitle     String
   reviewContent   String?
   createdAt       DateTime @default(now())

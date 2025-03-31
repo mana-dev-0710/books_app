@@ -8,6 +8,7 @@ import BookshelfEditModal from 'components/modals/BookshelfEditModal';
 import BookshelfDeleteModal from 'components/modals/BookshelfDeleteModal';
 import Icons from "components/icons/Icons"
 import { MyBook } from "@/types/bookTypes"
+import { BookshelfEditForm } from "@/types/formTypes"
 
 const MyBookList = () => {
 
@@ -24,11 +25,7 @@ const MyBookList = () => {
         const res = await fetch('/api/bookshelf', { method: 'GET' });
         if (res.ok) {
             const resJson = await res.json();
-            console.log('resData:', resJson);
-
             setBooks(resJson.books);
-
-            console.log('bookshelf:', books);
         } else {
             alert('検索処理に失敗しました。');
         }
@@ -86,20 +83,42 @@ const MyBookList = () => {
     };
 
     // 編集処理
-    const handleEditConfirm = async () => {
+    const handleEditConfirm = async (data: BookshelfEditForm) => {
+        if (!data) return;
         if (!selectedBook) return;
 
-        try {
-            let fetchUrl = '/api/bookshelf?';
-            const queryParams = new URLSearchParams();
+        if (!data.finishedReading && data.finishedAt) {
+            alert('読了日を追加する場合、読了状態で"読了"を選択してください。');
+            return;
+        }
 
-            queryParams.append("bookshelfId", selectedBook.bookshelfId);
-            queryParams.append("isbn", selectedBook.isbn);
-            fetchUrl += queryParams;
+        if ((data.rating || data.reviewTitle || data.reviewContent)
+            && (!data.rating || !data.reviewTitle)) {
+            alert('評価する場合、評価と評価タイトルの入力は必須です。');
+            return;
+        }
+
+        try {
+            const fetchUrl = `/api/bookshelf`;
+            const requestBody = {
+                bookshelfId: selectedBook.bookshelfId,
+                finishedReading: data.finishedReading ?? false,
+                finishedAt: data.finishedAt || "",
+                isRated: data.rating ? true : false, 
+                reviewTitle: data.reviewTitle || "",
+                rating: data.rating || "",
+                reviewContent: data.reviewContent || "",
+            };
 
             const response = await fetch(fetchUrl, {
                 method: 'PUT',
+                headers: {
+                    "Accept": "application/json",
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(requestBody),
             });
+
             if (response.ok) {
                 alert('編集が完了しました！');
                 handleCloseEditModal();
@@ -122,7 +141,6 @@ const MyBookList = () => {
             const queryParams = new URLSearchParams();
 
             queryParams.append("bookshelfId", selectedBook.bookshelfId);
-            queryParams.append("isbn", selectedBook.isbn);
             fetchUrl += queryParams;
 
             const res = await fetch(fetchUrl, {
@@ -167,6 +185,7 @@ const MyBookList = () => {
                             <td className="px-3 py-2 text-start"></td>
                             <td className="hidden sm:table-cell px-3 py-2 text-start"></td>
                             <td className="hidden sm:table-cell min-w-[4rem] px-3 py-2 text-start"></td>
+                            <td className="hidden sm:table-cell min-w-[7rem] px-3 py-2 text-start"></td>
                             <td className="px-3 py-2 text-end"></td>
                         </tr>
                     </tbody>
@@ -179,15 +198,15 @@ const MyBookList = () => {
                                 <td className="hidden sm:table-cell px-3 py-1 whitespace-normal">{book.author}</td>
                                 <td className={`hidden sm:table-cell px-3 py-1 min-w-[7rem] whitespace-normal ${!book.finishedReading ? 'text-gray-500' : ''}`}>
                                     {book.finishedReading ?
-                                        <div className="flex items-center">
+                                        <div className="flex items-center gap-1">
                                             <Icons name="isInBookshelf" className="w-5 text-primary-400" />
                                             <p>{book.finishedAt}</p>
                                         </div>
                                         : "未読"
                                     }
                                 </td>
-                                <td className={`hidden sm:table-cell px-3 py-1 min-w-[4rem] whitespace-normal ${!book.rated ? 'text-gray-500' : ''}`}>
-                                    {book.rated ?
+                                <td className={`hidden sm:table-cell px-3 py-1 min-w-[4rem] whitespace-normal ${!book.isRated ? 'text-gray-500' : ''}`}>
+                                    {book.isRated ?
                                         <Rating>
                                             <RatingStar className="text-yellow-400" />
                                             <p>{book.rating}/5</p>
@@ -220,7 +239,7 @@ const MyBookList = () => {
             <BookshelfDetailModal
                 isDetailModalOpen={isDetailModalOpen}
                 handleCloseDetailModal={handleCloseDetailModal}
-                className="flex items-center justify-center py-32 bg-gray-400 bg-opacity-60 text-xs"
+                className="flex items-center justify-center py-8 bg-gray-400 bg-opacity-60 text-xs"
                 size="md"
                 book={selectedBook}
             />
@@ -228,7 +247,7 @@ const MyBookList = () => {
                 isEditModalOpen={isEditModalOpen}
                 handleCloseEditModal={handleCloseEditModal}
                 handleEditConfirm={handleEditConfirm}
-                className="flex items-center justify-center py-32 bg-gray-400 bg-opacity-60 text-xs"
+                className="flex items-center justify-center py-8 bg-gray-400 bg-opacity-60 text-xs"
                 size="md"
                 book={selectedBook}
             />
@@ -236,7 +255,7 @@ const MyBookList = () => {
                 isDeleteModalOpen={isDeleteModalOpen}
                 handleCloseDeleteModal={handleCloseDeleteModal}
                 handleDeleteConfirm={handleDeleteConfirm}
-                className="flex items-center justify-center py-32 bg-gray-400 bg-opacity-60 text-xs"
+                className="flex items-center justify-center py-8 bg-gray-400 bg-opacity-60 text-xs"
                 size="md"
                 book={selectedBook}
             />

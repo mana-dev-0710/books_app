@@ -49,13 +49,36 @@ const BookshelfDetailModal: React.FC<BookshelfDetailModalProp> = ({
                   <p>{book.author}</p>
                 </div>
                 <ul className="space-y-1">
-                  <li>出版社： {book.publisher}</li>
-                  <li>発行日： {book.publicationDate}</li>
-                  <li>ジャンル： {book.genre}</li>
-                  <li>ISBN： {book.isbn}</li>
+                  <li className="flex gap-1">
+                    <span>出版社：</span>
+                    <span>{book.publisher}</span>
+                  </li>
+                  <li className="flex gap-1">
+                    <span>発行日：</span>
+                    <span>{book.publicationDate}</span>
+                  </li>
+                  <li className="flex gap-1">
+                    <span>ジャンル：</span>
+                    <span>{book.genre}</span>
+                  </li>
+                  <li className="flex gap-1">
+                    <span>ISBN：</span>
+                    <span>{book.isbn}</span>
+                  </li>
+                  <li className="flex items-center gap-1">
+                    <span>読了：</span>
+                    {book.finishedReading ? (
+                      <div className="flex items-center gap-1">
+                        <p>{book.finishedAt}</p>
+                        <p>読了</p>
+                      </div>
+                    ) : (
+                      <span>未読</span>
+                    )}
+                  </li>
                 </ul>
 
-                {book.rating ? (
+                {book.isRated && book.rating ? (
                   <Accordion className="mt-3">
                     <AccordionPanel>
                       <AccordionTitle className="flex w-full h-8 items-center justify-between p-3 text-left font-medium focus:ring-0 first:rounded-t-lg last:rounded-b-lg">
@@ -66,11 +89,11 @@ const BookshelfDetailModal: React.FC<BookshelfDetailModalProp> = ({
                           <p className="text-xs font-bold">{book.reviewTitle}</p>
                           <div className="flex items-center justify-end h-8">
                             <Rating className="w-20">
-                              <RatingStar className={book.rating > 0 ? `` : `text-gray-300`} />
-                              <RatingStar className={book.rating > 1 ? `` : `text-gray-300`} />
-                              <RatingStar className={book.rating > 2 ? `` : `text-gray-300`} />
-                              <RatingStar className={book.rating > 3 ? `` : `text-gray-300`} />
-                              <RatingStar className={book.rating > 4 ? `` : `text-gray-300`} />
+                              <RatingStar className={parseInt(book.rating, 10) > 0 ? `` : `text-gray-300`} />
+                              <RatingStar className={parseInt(book.rating, 10) > 1 ? `` : `text-gray-300`} />
+                              <RatingStar className={parseInt(book.rating, 10) > 2 ? `` : `text-gray-300`} />
+                              <RatingStar className={parseInt(book.rating, 10) > 3 ? `` : `text-gray-300`} />
+                              <RatingStar className={parseInt(book.rating, 10) > 4 ? `` : `text-gray-300`} />
                             </Rating>
                           </div>
                           <p className="mt-2 text-xss">{book.reviewContent}</p>
