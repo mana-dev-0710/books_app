@@ -157,21 +157,37 @@ async function updateBookshelfData(book: BookshelfEditForm) {
 async function deleteBookshelfData(bookshelfId: string) {
 
     try {
-        await prisma.$transaction([
-            // 評価情報を削除
-            prisma.rating.delete({
-                where: {
-                    bookshelfId,
-                },
-            }),
+        // rating の存在を確認
+        const existingRating = await prisma.rating.findUnique({
+            where: {
+                bookshelfId,
+            },
+        });
 
-            // 書籍情報を削除
+        // 削除するデータを格納
+        const deleteOperations = [];
+
+        if (existingRating) {
+            deleteOperations.push(
+                prisma.rating.delete({
+                    where: {
+                        bookshelfId,
+                    },
+                })
+            );
+        }
+
+        deleteOperations.push(
             prisma.bookshelf.delete({
                 where: {
                     id: bookshelfId,
                 },
-            }),
-        ]);
+            })
+        );
+
+        // トランザクションで削除を実行
+        await prisma.$transaction(deleteOperations);
+
     } catch (e) {
         console.error("データの削除中に予期せぬエラーが発生しました。:", e);
     }
