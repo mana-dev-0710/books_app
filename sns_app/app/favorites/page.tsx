@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Header from "components/layout/Header";
@@ -34,7 +34,6 @@ const Favorite = () => {
           <Sidebar />
         </div>
         <div className="w-full lg:basis-3/4 h-screen bg-secondary-50">
-          {/* TODO:テーブル部分調整、ヘッダー部にフィルター機能追加（以下、仮） */}
           <div className="flex flex-col px-5 py-3">
             <div className="pt-2 pb-1 font-semibold">
               <Title titleName="お気に入り" />

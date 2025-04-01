@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import { Dropdown } from 'flowbite-react';
 import { FavoriteBook } from "types/bookTypes"
 import Icons from "components/icons/Icons"
@@ -85,7 +84,7 @@ const MyBookList = () => {
             });
 
             if (res.ok) {
-                alert('本棚の追加が完了しました！');//TODO:トーストにする
+                alert('本棚の追加が完了しました！');
                 await searchFavorites();
             } else {
                 alert('本棚の追加処理に失敗しました。');
@@ -115,7 +114,7 @@ const MyBookList = () => {
             });
 
             if (res.ok) {
-                alert('削除が完了しました！');//TODO:トーストにする
+                alert('削除が完了しました！');
                 handleCloseDeleteModal();
                 await searchFavorites();
             } else {

@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { validationSearchSchemaIsbn, validationSearchSchemaDetails } from "app/utils/validationSchema";
 import { BaseBook, FavoriteBook } from "@/types/bookTypes";
 import { SearchForm } from "@/types/formTypes";
 import { fetchNdlData } from "app/api/favorites/services/fetchNdlData";

@@ -6,8 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { validationSearchSchemaDetails } from "app/utils/validationSchema";
 
 type DetailsSearchFormProps = {
-    setSearchForm: (data: any) => void;
-    searchBooks: (data: any) => void;
+    searchBooks: (data: SearchFormOfDetails) => void;
 };
 
 type SearchFormOfDetails = {
@@ -16,7 +15,7 @@ type SearchFormOfDetails = {
     publisher?: string;
 }
 
-const DetailsSearchForm: React.FC<DetailsSearchFormProps> = ({ setSearchForm, searchBooks }) => {
+const DetailsSearchForm: React.FC<DetailsSearchFormProps> = ({ searchBooks }) => {
 
     const {
         register,
@@ -28,7 +27,6 @@ const DetailsSearchForm: React.FC<DetailsSearchFormProps> = ({ setSearchForm, se
     });
 
     const setForm = (data: SearchFormOfDetails) => {
-        setSearchForm(data);
         searchBooks(data);
     };
 

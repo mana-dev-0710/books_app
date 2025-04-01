@@ -72,7 +72,6 @@ async function parseXmlToJson(xml: string): Promise<Record<string, string>[]> {
             return resJsonArray;
         }
         const metadata = channel["item"];
-        //console.log("metadata:", metadata);
 
         // ISBNをキーとしたデータマップ
         const isbnMap: Record<string, Record<string, string>> = {};

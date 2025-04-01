@@ -13,7 +13,7 @@ type SearchError = {
 };
 
 type Toast = {
-    message: string; 
+    message: string;
     type: "success" | "error" | "info";
 };
 
@@ -23,31 +23,11 @@ type BookCardProp = {
     setError: React.Dispatch<React.SetStateAction<SearchError | undefined>>;
 };
 
-const BookCard = ({ book, setToast, setError }: BookCardProp) => {
-    const [imageUrl, setImageUrl] = useState<string>(defaultBookImage);
-    const [loading, setLoading] = useState<boolean>(true);
+const BookCard = ({ book, setToast }: BookCardProp) => {
     const [isFavorite, setIsFavorite] = useState<boolean>(book.isFavorite);
     const [isInBookshelf, setIsInBookshelf] = useState<boolean>(book.isInBookshelf);
 
-    useEffect(() => {
-        const fetchImage = async () => {
-            try {
-                setLoading(true);
-                const imgUrl = book.imgUrl;
-                if (imgUrl) {
-                    setImageUrl(imgUrl);
-                } else {
-                    setImageUrl(defaultBookImage);
-                }
-            } catch (error) {
-                setImageUrl(defaultBookImage);
-            } finally {
-                setLoading(false);
-            }
-        };
 
-        fetchImage();
-    }, [book, setError]);
 
     // お気に入りトグル処理
     const toggleFavorite = async () => {
@@ -88,7 +68,7 @@ const BookCard = ({ book, setToast, setError }: BookCardProp) => {
                 });
                 const resData = await res.json();
 
-                if(res.ok) {
+                if (res.ok) {
                     setToast({ message: "本棚に追加しました。", type: "success" });
                     setIsInBookshelf(!isInBookshelf);
                 } else {
@@ -112,18 +92,14 @@ const BookCard = ({ book, setToast, setError }: BookCardProp) => {
                 <p className="font-semibold">vol. {book.volume}</p>
                 <p>{book.author}</p>
             </div>
-            {loading ? (
-                <Loading className={"h-32 flex justify-center items-center"} />
-            ) : (
-                <Image
-                    src={`${book.imgUrl}`}
-                    alt="書影イメージ"
-                    width={80}
-                    height={80}
-                    priority
-                    className="rounded-md border border-gray-100 mb-2"
-                />
-            )}
+            <Image
+                src={`${book.imgUrl}`}
+                alt="書影イメージ"
+                width={80}
+                height={80}
+                priority
+                className="rounded-md border border-gray-100 mb-2"
+            />
             <div className="flex flex-col justify-between h-full">
                 <ul className="text-xs space-y-1">
                     <li>出版社：{book.publisher}</li>

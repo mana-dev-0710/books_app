@@ -46,8 +46,7 @@ async function GET() {
         });
       }
     }
-    //session.user.bookshelfSearchResults = booksOfDbData;
-
+    
     return NextResponse.json(
       { books: booksOfDbData },
       { status: 200 }

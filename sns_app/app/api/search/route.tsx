@@ -23,7 +23,7 @@ async function GET(req: NextRequest) {
             });
             if (!validationResultIsbn.success) {
                 return NextResponse.json(
-                    { error: "バリデーションエラー" },  // TODO:項目ごとにエラーメッセージを返却？
+                    { error: "バリデーションエラー" }, 
                     { status: 400 },
                 );
             }
@@ -35,7 +35,7 @@ async function GET(req: NextRequest) {
             });
             if (!validationResultDetails.success) {
                 return NextResponse.json(
-                    { error: "バリデーションエラー" },  // TODO:項目ごとにエラーメッセージを返却？
+                    { error: "バリデーションエラー" }, 
                     { status: 400 },
                 );
             }
