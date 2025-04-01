@@ -39,18 +39,6 @@ const Menu = () => {
             >
                 マイ本棚
             </button>
-            <button
-                type="button"
-                className={`${baseButtonClassName} ${pathname === '/' ? activeClassName : 'hover:bg-gray-200'}`}
-            >
-                プロフィール
-            </button>
-            {/* <button
-                type="button"
-                className={`${baseButtonClassName} ${pathname === '/progression' ? activeClassName : 'hover:bg-gray-200'}`}
-            >
-                プログレッション
-            </button> */}
         </div>
     );
 };

@@ -72,6 +72,29 @@ export const validationSearchSchemaDetails = z
   .refine(data => data.title || data.author || data.publisher, {
     message: "タイトル、作者、出版社のいずれかを入力してください。",
     path: ["publisher"],
-});
+  });
 
-//TODO:Ratingテーブルに投入するratingは1〜5にバリデーション（DBで定義できないため）
+export const validationBookshelfEditSchema = z
+  .object({
+    finishedAt: z
+      .string()
+      .refine(value => value === "" || /^\d{4}\/\d{2}\/\d{2}$/.test(value), {
+        message: "読了日はYYYY/MM/DD形式で入力してください。",
+      })
+      .optional(),
+    reviewTitle: z
+      .string()
+      .max(32, "評価タイトルは32字以内で入力して下さい。")
+      .optional(),
+    rating: z
+      .string()
+      .refine(value => value === "" || value === null || /^[1-5]$/.test(value), {
+        message: "評価は1〜5の半角数字で入力してください。",
+      })
+      .optional(),
+    reviewContent: z
+      .string()
+      .max(320, "評価内容は320字以内で入力して下さい。")
+      .optional(),
+  });
+

@@ -6,15 +6,14 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { validationSearchSchemaIsbn } from "app/utils/validationSchema";
 
 type IsbnSearchFormProps = {
-  setSearchForm: (data: any) => void;
-  searchBooks: (data: any) => void;
+  searchBooks: (data: SearchFormOfIsbn) => void;
 };
 
 type SearchFormOfIsbn = {
   isbn: string;
 }
 
-const IsbnSearchForm: React.FC<IsbnSearchFormProps> = ({ setSearchForm, searchBooks }) => {
+const IsbnSearchForm: React.FC<IsbnSearchFormProps> = ({ searchBooks }) => {
 
   const {
     register,
@@ -26,7 +25,6 @@ const IsbnSearchForm: React.FC<IsbnSearchFormProps> = ({ setSearchForm, searchBo
   });
 
   const setForm = (data: SearchFormOfIsbn) => {
-    setSearchForm(data);
     searchBooks(data);
   };
 
@@ -35,7 +33,7 @@ const IsbnSearchForm: React.FC<IsbnSearchFormProps> = ({ setSearchForm, searchBo
       <label className="flex items-center py-1 text-xs md:text-sm" htmlFor="isbn">
         ISBN
         <span className="px-2.5 ml-2 rounded-full bg-red-100 font-medium text-xss text-red-800">必須</span>
-        </label>
+      </label>
       <input
         id="isbn"
         type="text"

@@ -22,14 +22,13 @@ async function fetchNdlData(searchForm: SearchForm): Promise<BaseBook[]> {
             apiUrl += `title=${title}&`;
         }
         if (author) {
-            apiUrl += `author=${author}&`;
+            apiUrl += `creator=${author}&`;
         }
         if (publisher) {
             apiUrl += `publisher=${publisher}&`;
         }
     }
     apiUrl += `maximumRecords=${maximumRecords}`;
-    console.log("apiUrl", apiUrl);
 
     // NDL情報取得処理
     try {
@@ -47,7 +46,6 @@ async function fetchNdlData(searchForm: SearchForm): Promise<BaseBook[]> {
         const resNdlXml = await ndlRes.text();
         // XMLをJSONに変換
         const resNdlJson = isbn ? await parseXmlToJsonByIsbn(resNdlXml) : await parseXmlToJson(resNdlXml);
-        console.log("resNdlJson", resNdlJson);
 
         for (const resBook of resNdlJson) {
             if (isbn) { // ISBN検索の場合はパラメータのISBNをそのまま設定

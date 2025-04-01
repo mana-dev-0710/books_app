@@ -3,9 +3,10 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/authOptions";
 import { CustomSession } from "@/app/api/auth/[...nextauth]/authOptions";
 import { BaseBook, MyBook } from "types/bookTypes";
-import { SearchForm } from "types/formTypes";
+import { SearchForm, BookshelfEditForm } from "types/formTypes";
 import { fetchNdlData } from "app/api/search/services/fetchNdlData";
-import { fetchDbData, deleteBookshelfData } from "app/api/bookshelf/services/fetchDbData";
+import { fetchDbData, deleteBookshelfData, updateBookshelfData } from "app/api/bookshelf/services/fetchDbData";
+import { validationBookshelfEditSchema } from "app/utils/validationSchema";
 
 async function GET() {
 
@@ -45,15 +46,75 @@ async function GET() {
         });
       }
     }
-    //session.user.bookshelfSearchResults = booksOfDbData;
-
+    
     return NextResponse.json(
       { books: booksOfDbData },
       { status: 200 }
     );
   } catch (e) {
     return NextResponse.json(
-      { error: "本棚の検索中に想定外のエラーが発生しました。" },
+      { error: "サーバーエラー" },
+      { status: 500 }
+    );
+  }
+
+}
+
+async function PUT(req: NextRequest) {
+
+  try {
+    const requestBody: BookshelfEditForm = await req.json();
+
+    if (!requestBody || !requestBody.bookshelfId) {
+      return NextResponse.json(
+        { error: "パラメーターエラー" },
+        { status: 400 }
+      );
+    }
+
+    // バリデーションの対象となる項目を抽出
+    const schemaKeys = Object.keys(validationBookshelfEditSchema.shape);
+    const filteredBody = Object.fromEntries(
+      Object.entries(requestBody).filter(([key]) => schemaKeys.includes(key))
+    );
+    // バリデーション実行
+    try {
+      validationBookshelfEditSchema.parse(filteredBody);
+    } catch (e) {
+      console.error(e);
+      return NextResponse.json(
+        { error: "バリデーションエラー" },
+        { status: 400 }
+      );
+    }
+
+    //isRatedがfalseかつ、評価関連の項目が入力されていた場合、パラメーターエラー
+    if ((requestBody.isRated) && (requestBody.rating || requestBody.reviewTitle || requestBody.reviewTitle)
+      && (!requestBody.rating || !requestBody.reviewTitle)) {
+      return NextResponse.json(
+        { error: "パラメーターエラー（評価情報）" },
+        { status: 400 }
+      );
+    }
+    //評価情報の入力があるが、評価時の必須項目であるratingとreviewTitleのいずれかまたは両方の入力がなかった場合、パラメーターエラー
+    if ((requestBody.isRated) && (requestBody.rating || requestBody.reviewTitle || requestBody.reviewTitle)
+      && (!requestBody.rating || !requestBody.reviewTitle)) {
+      return NextResponse.json(
+        { error: "パラメーターエラー（評価情報）" },
+        { status: 400 }
+      );
+    }
+
+    // DBの読了情報と評価情報を更新
+    await updateBookshelfData(requestBody);
+
+    return NextResponse.json(
+      { status: 200 }
+    );
+  } catch (e) {
+    console.error(e);
+    return NextResponse.json(
+      { error: "サーバーエラー" },
       { status: 500 }
     );
   }
@@ -78,13 +139,15 @@ async function DELETE(req: NextRequest) {
       { status: 200 }
     );
   } catch (e) {
+    console.error(e);
     return NextResponse.json(
+      { error: "サーバーエラー" },
       { status: 500 }
     );
   }
 
 }
 
-export { GET, DELETE };
+export { GET, PUT, DELETE };
 
 

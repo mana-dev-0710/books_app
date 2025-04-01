@@ -33,13 +33,13 @@ const Profile = ({ className, imageClassName }: ProfileProp) => {
             <div className="relative p-2 ml-5 lg:ml-0">
                 <ul className="grid grid-cols-2 gap-2 text-xs sm:text-sm">
                     <li className="col-span-2 mt-1">読書冊数：
-                        <p className="inline-block text-sm lg:text-xs font-bold">50</p> 冊
+                        <p className="inline-block text-sm lg:text-xs font-bold">XX</p> 冊
                     </li>
                     <li className="col-span-2">読書ページ数：
-                        <p className="inline-block text-sm lg:text-xs font-bold">3,000</p> p
+                        <p className="inline-block text-sm lg:text-xs font-bold">X,XXX</p> p
                     </li>
                     <li className="col-span-2">評価冊数：
-                        <p className="inline-block text-sm lg:text-xs font-bold">50</p> 冊
+                        <p className="inline-block text-sm lg:text-xs font-bold">XX</p> 冊
                     </li>
                 </ul>
             </div>

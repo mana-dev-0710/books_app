@@ -6,13 +6,14 @@ import { useRouter } from "next/navigation";
 import Header from "components/layout/Header";
 import Sidebar from "components/layout/Sidebar";
 import Loading from "components/layout/Loading";
+import Title from "components/layout/Title";
 import IsbnSearchForm from "components/main/IsbnSearchForm";
 import DetailsSearchForm from "components/main/DetailsSearchForm";
 import BookCard from "components/main/BookCard";
-import Title from "components/layout/Title";
 import { SearchedBook } from "@/types/bookTypes";
+import { Toast } from "@/types/toastTypes";
 import ToastNotification from "@/components/common/ToastNotification";
-import { Tabs, Accordion } from 'flowbite-react';
+import { Tabs } from 'flowbite-react';
 
 type SearchForm = {
     isbn?: string;
@@ -27,12 +28,12 @@ type SearchError = {
 
 const Search = () => {
 
-    const { data: session, status } = useSession();
+    const { status } = useSession();
     const router = useRouter();
     const [books, setBooks] = useState<SearchedBook[]>([]);
-    const [searchForm, setSearchForm] = useState<SearchForm>({});
     const [searchError, setSearchError] = useState<SearchError>();
-    const [toast, setToast] = useState<{ message: string; type: "success" | "error" | "info" } | null>(null);
+    const [searchResultLoading, setSearchResultLoading] = useState<boolean>(false);
+    const [toast, setToast] = useState<Toast | null>(null);
     const [activeTab, setActiveTab] = useState<'isbn' | 'details'>('isbn');
 
     useEffect(() => {
@@ -49,7 +50,7 @@ const Search = () => {
 
     // 書籍検索の処理
     const searchBooks = async (data: SearchForm) => {
-
+        setSearchResultLoading(true);
         setBooks([]);
         setSearchError(undefined);
         setToast(null);
@@ -73,7 +74,7 @@ const Search = () => {
                 }
             }
             fetchUrl += queryParams;
-            console.log("fetchUrl:", fetchUrl);
+
             const res = await fetch(fetchUrl, {
                 method: "GET",
                 headers: {
@@ -90,6 +91,8 @@ const Search = () => {
             }
         } catch (err) {
             setSearchError({ message: "書籍情報検索中にエラーが発生しました。" });
+        } finally {
+            setSearchResultLoading(false);
         }
 
     };
@@ -127,28 +130,34 @@ const Search = () => {
                                     }}
                                 >
                                     <Tabs.Item title="ISBN検索" active={activeTab === 'isbn'}>
-                                        <IsbnSearchForm setSearchForm={setSearchForm} searchBooks={searchBooks} />
+                                        <IsbnSearchForm searchBooks={searchBooks} />
                                     </Tabs.Item>
                                     <Tabs.Item title="詳細検索" active={activeTab === 'details'}>
-                                        <DetailsSearchForm setSearchForm={setSearchForm} searchBooks={searchBooks} />
+                                        <DetailsSearchForm searchBooks={searchBooks} />
                                     </Tabs.Item>
                                 </Tabs>
                             </div>
-                            <p className="p-1 mt-2 text-xs md:text-sm text-red-500">
-                                {searchError?.message && <span>{searchError.message}</span>}
-                            </p>
-                            <div className="relative flex-1">
-                                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 overflow-y-auto max-h-[calc(100vh-250px)] pr-1 py-3 pb-16">
-                                    {Array.isArray(books) && books.map((book, index) => (
-                                        <BookCard
-                                            key={index}
-                                            book={book}
-                                            setToast={setToast}
-                                            setError={setSearchError}
-                                        />
-                                    ))}
-                                </div>
-                            </div>
+                            {searchResultLoading ? (
+                                <Loading className="flex justify-center items-center pt-10" />
+                            ) : (
+                                <>
+                                    <p className="p-1 mt-2 text-xs md:text-sm text-red-500">
+                                        {searchError?.message && <span>{searchError.message}</span>}
+                                    </p>
+                                    <div className="relative flex-1">
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 overflow-y-auto max-h-[calc(100vh-250px)] pr-1 py-3 pb-16">
+                                            {Array.isArray(books) && books.map((book, index) => (
+                                                <BookCard
+                                                    key={index}
+                                                    book={book}
+                                                    setToast={setToast}
+                                                    setError={setSearchError}
+                                                />
+                                            ))}
+                                        </div>
+                                    </div>
+                                </>
+                            )}
                         </div>
                     </div>
                 </main>

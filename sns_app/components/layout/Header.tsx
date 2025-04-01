@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react'
-import { useSession, signIn, signOut } from "next-auth/react"
+import { signOut } from "next-auth/react"
 import Icons from "components/icons/Icons";
 import Menu from "components/layout/Menu";
 

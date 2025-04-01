@@ -15,11 +15,11 @@ async function PUT(req: NextRequest) {
         const isbn = reqUrl.searchParams.get("isbn");
 
         if (!isbn) return NextResponse.json(
-            { error: "ISBNが不正です。" }, // TODO:項目ごとにエラーメッセージを返却？
+            { error: "ISBNが不正です。" }, 
             { status: 400 }, 
         );
 
-        //バリデーション　TODO:項目ごとにエラーメッセージを返却？
+        //バリデーション
         const validationResult = await validationSearchSchemaIsbn.safeParseAsync({ isbn: isbn });
         if (!validationResult.success) {
             return NextResponse.json(

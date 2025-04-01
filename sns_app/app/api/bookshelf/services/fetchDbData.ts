@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/authOptions";
 import { CustomSession } from "@/app/api/auth/[...nextauth]/authOptions";
 import { MyBook } from "types/bookTypes";
+import { BookshelfEditForm } from "types/formTypes";
 import prisma from "lib/Prisma";
 import { parseTypes } from "app/utils/parseTypes";
 
@@ -45,7 +46,7 @@ async function fetchDbData(): Promise<MyBook[]> {
                 isbn: book.isbn,
                 bookshelfId: book.id,
                 isFavorite: isFavorite,
-                rated: book.isRated,
+                isRated: book.isRated,
                 finishedReading: book.finishedReading,
                 finishedAt: book.finishedAt ? parseTypes(book.finishedAt) : null,
                 rating: book.ratings.length > 0 ? book.ratings[0].rating : null,
@@ -54,7 +55,6 @@ async function fetchDbData(): Promise<MyBook[]> {
             }
         });
 
-        console.log("myBookData:", myBookData);
         return myBookData;
     } catch (e) {
         console.error("DB情報の検索中に予期せぬエラーが発生しました。:", e);
@@ -63,23 +63,131 @@ async function fetchDbData(): Promise<MyBook[]> {
 
 }
 
-async function deleteBookshelfData(bookshelfId: string) {
-
+async function updateBookshelfData(book: BookshelfEditForm) {
 
     try {
-        // 書籍情報を削除
-        await prisma.bookshelf.delete({
+        // 書籍情報を更新
+        await prisma.bookshelf.update({
             where: {
-                id: bookshelfId,
+                id: book.bookshelfId,
+            },
+            data: {
+                finishedReading: book.finishedReading ?? false,
+                // string（YYYY/MM/DD）からDateに変換して設定
+                finishedAt: book.finishedAt ? new Date(book.finishedAt.replace(/\//g, '-')) : null,
             },
         });
 
-        // 評価情報を削除
-        await prisma.rating.delete({
+        // 評価情報の確認
+        const selectedBook = await prisma.bookshelf.findUnique({
+            where: {
+                id: book.bookshelfId,
+            },
+        });
+        if (!selectedBook || !selectedBook.userId) {
+            console.error("ユーザーIDの検索に失敗しました。");
+            return;
+        }
+
+        if (selectedBook.isRated == false && book.isRated == false) {
+            // isRatedの変更がない場合、処理終了
+            return;
+        } else if (selectedBook.isRated == true && book.isRated == false) {
+            // isRatedがtrueからfalseに変更される場合、評価情報を削除
+            await prisma.$transaction([
+                prisma.rating.delete({
+                    where: {
+                        bookshelfId: book.bookshelfId,
+                    },
+                }),
+                prisma.bookshelf.update({
+                    where: {
+                        id: book.bookshelfId,
+                    },
+                    data: {
+                        isRated: book.isRated,
+                    },
+                }),
+            ]);
+        } else {
+            // 上記以外の場合、評価情報を更新（既にデータが存在する場合は新規追加）
+            if (!book.rating || !book.reviewTitle) {
+                console.error("評価と評価タイトルは必須です。");
+                return;
+            }
+
+            await prisma.$transaction([
+                prisma.rating.upsert({
+                    where: {
+                        bookshelfId: book.bookshelfId,
+                    },
+                    update: {
+                        userId: selectedBook.userId,
+                        bookshelfId: book.bookshelfId,
+                        rating: book.rating,
+                        reviewTitle: book.reviewTitle,
+                        reviewContent: book.reviewContent ?? null,
+                    },
+                    create: {
+                        userId: selectedBook.userId,
+                        bookshelfId: book.bookshelfId,
+                        rating: book.rating,
+                        reviewTitle: book.reviewTitle,
+                        reviewContent: book.reviewContent ?? null,
+                    },
+                }),
+                prisma.bookshelf.update({
+                    where: {
+                        id: book.bookshelfId,
+                    },
+                    data: {
+                        isRated: book.isRated,
+                    },
+                }),
+            ]);
+
+        }
+
+    } catch (e) {
+        console.error("データの更新中に予期せぬエラーが発生しました。:", e);
+    }
+
+}
+
+async function deleteBookshelfData(bookshelfId: string) {
+
+    try {
+        // rating の存在を確認
+        const existingRating = await prisma.rating.findUnique({
             where: {
                 bookshelfId,
             },
         });
+
+        // 削除するデータを格納
+        const deleteOperations = [];
+
+        if (existingRating) {
+            deleteOperations.push(
+                prisma.rating.delete({
+                    where: {
+                        bookshelfId,
+                    },
+                })
+            );
+        }
+
+        deleteOperations.push(
+            prisma.bookshelf.delete({
+                where: {
+                    id: bookshelfId,
+                },
+            })
+        );
+
+        // トランザクションで削除を実行
+        await prisma.$transaction(deleteOperations);
+
     } catch (e) {
         console.error("データの削除中に予期せぬエラーが発生しました。:", e);
     }
@@ -87,4 +195,4 @@ async function deleteBookshelfData(bookshelfId: string) {
 }
 
 
-export { fetchDbData, deleteBookshelfData };
+export { fetchDbData, updateBookshelfData, deleteBookshelfData };

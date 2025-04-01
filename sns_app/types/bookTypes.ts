@@ -20,8 +20,8 @@ export type MyBook = BaseBook & {
     isFavorite: boolean;
     finishedReading: boolean;
     finishedAt?: string | null;
-    rated: boolean;
-    rating?: number | null;
+    isRated: boolean;
+    rating?: string | null;
     reviewTitle? : string | null;
     reviewContent? : string | null;
 };
