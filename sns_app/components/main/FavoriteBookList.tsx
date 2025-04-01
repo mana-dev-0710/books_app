@@ -6,13 +6,16 @@ import { FavoriteBook } from "types/bookTypes"
 import Icons from "components/icons/Icons"
 import FavoriteDetailModal from "components/modals/FavoriteDetailModal"
 import FavoriteDeleteModal from "components/modals/FavoriteDeleteModal"
+import ToastNotification from "@/components/common/ToastNotification";
+import { Toast } from "@/types/toastTypes";
 
-const MyBookList = () => {
+const FavoriteBookList = () => {
 
     const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [selectedBook, setSelectedBook] = useState<FavoriteBook | null>(null);
     const [books, setBooks] = useState<FavoriteBook[] | null>(null);
+    const [toast, setToast] = useState<Toast | null>(null);
 
     // お気に入り検索処理
     const searchFavorites = async () => {
@@ -22,7 +25,7 @@ const MyBookList = () => {
             const resJson = await res.json();
             setBooks(resJson.books);
         } else {
-            alert('検索処理に失敗しました。');
+            setToast({ message: "お気に入りの検索に失敗しました。", type: "error" });
         }
 
     };
@@ -33,8 +36,8 @@ const MyBookList = () => {
             try {
                 await searchFavorites();
             } catch (e) {
-                console.error('検索処理中に予期せぬエラーが発生しました。:', e);
-                alert('検索処理中に予期せぬエラーが発生しました。');
+                console.error('お気に入り検索処理エラー:', e);
+                setToast({ message: "お気に入りの検索に失敗しました。", type: "error" });
             }
         }
         fetchFavorites();
@@ -84,14 +87,14 @@ const MyBookList = () => {
             });
 
             if (res.ok) {
-                alert('本棚の追加が完了しました！');
+                setToast({ message: "本棚に追加しました！", type: "success" });
                 await searchFavorites();
             } else {
-                alert('本棚の追加処理に失敗しました。');
+                setToast({ message: "本棚への追加に失敗しました。", type: "error" });
             }
         } catch (error) {
-            console.error('本棚の追加処理エラー:', error);
-            alert('エラーが発生しました。');
+            console.error('本棚への追加処理エラー:', error);
+            setToast({ message: "本棚への追加に失敗しました。", type: "error" });
         }
     };
 
@@ -114,15 +117,17 @@ const MyBookList = () => {
             });
 
             if (res.ok) {
-                alert('削除が完了しました！');
                 handleCloseDeleteModal();
+                setToast({ message: "お気に入りから削除しました！", type: "success" });
                 await searchFavorites();
             } else {
-                alert('削除処理に失敗しました。');
+                handleCloseDeleteModal();
+                setToast({ message: "お気に入りの削除に失敗しました。", type: "error" });
             }
         } catch (error) {
-            console.error('削除処理エラー:', error);
-            alert('エラーが発生しました。');
+            console.error('お気に入り削除処理エラー:', error);
+            handleCloseDeleteModal();
+            setToast({ message: "お気に入りの削除に失敗しました。", type: "error" });
         }
     };
 
@@ -205,8 +210,17 @@ const MyBookList = () => {
                 size="md"
                 book={selectedBook}
             />
+            {/* トースト表示 */}
+            {toast &&
+                <ToastNotification
+                    className="fixed top-5 right-5 z-50"
+                    message={toast.message}
+                    type={toast.type}
+                    onClose={() => setToast(null)}
+                />
+            }
         </>
     );
 };
 
-export default MyBookList;
+export default FavoriteBookList;

@@ -1,20 +1,13 @@
 'use client';
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import Icons from "components/icons/Icons";
 import { SearchedBook } from "@/types/bookTypes";
-import Loading from "components/layout/Loading";
-
-const defaultBookImage = 'public/images/default-book.png';
+import { Toast } from "@/types/toastTypes";
 
 type SearchError = {
     message?: string;
-};
-
-type Toast = {
-    message: string;
-    type: "success" | "error" | "info";
 };
 
 type BookCardProp = {
@@ -24,10 +17,9 @@ type BookCardProp = {
 };
 
 const BookCard = ({ book, setToast }: BookCardProp) => {
+
     const [isFavorite, setIsFavorite] = useState<boolean>(book.isFavorite);
     const [isInBookshelf, setIsInBookshelf] = useState<boolean>(book.isInBookshelf);
-
-
 
     // お気に入りトグル処理
     const toggleFavorite = async () => {
@@ -134,6 +126,5 @@ const BookCard = ({ book, setToast }: BookCardProp) => {
         </div>
     );
 };
-
 
 export default BookCard;

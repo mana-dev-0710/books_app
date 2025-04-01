@@ -11,7 +11,7 @@ import FavoriteBookList from "@/components/main/FavoriteBookList";
 
 const Favorite = () => {
 
-  const { data: session, status } = useSession();
+  const { status } = useSession();
   const router = useRouter();
 
   useEffect(() => {
@@ -40,7 +40,7 @@ const Favorite = () => {
             </div>
             <div className="min-w-full inline-block align-middle">
               <div className="overflow-x-auto border border-gray-200 rounded-md">
-                <FavoriteBookList />
+                <FavoriteBookList/>
               </div>
             </div>
           </div>

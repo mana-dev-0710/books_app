@@ -42,7 +42,7 @@ const FavoriteDeleteModal: React.FC<FavoriteDeleteModalProp> = ({
           <>
             <ModalHeader className="rounded-t-lg border-none border-x border-t">
               <div className="">
-                <p className="text-sm font-semibold">以下データを本棚から削除します。</p>
+                <p className="text-sm font-semibold">以下データをお気に入りから削除します。</p>
                 <p className="text-sm font-semibold">よろしいですか？</p>
                 <p className="mt-1 text-xs text-red-600">※この操作は元に戻せません。</p>
               </div>

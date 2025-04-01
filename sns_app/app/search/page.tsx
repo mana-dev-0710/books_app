@@ -11,6 +11,7 @@ import IsbnSearchForm from "components/main/IsbnSearchForm";
 import DetailsSearchForm from "components/main/DetailsSearchForm";
 import BookCard from "components/main/BookCard";
 import { SearchedBook } from "@/types/bookTypes";
+import { Toast } from "@/types/toastTypes";
 import ToastNotification from "@/components/common/ToastNotification";
 import { Tabs } from 'flowbite-react';
 
@@ -32,7 +33,7 @@ const Search = () => {
     const [books, setBooks] = useState<SearchedBook[]>([]);
     const [searchError, setSearchError] = useState<SearchError>();
     const [searchResultLoading, setSearchResultLoading] = useState<boolean>(false);
-    const [toast, setToast] = useState<{ message: string; type: "success" | "error" | "info" } | null>(null);
+    const [toast, setToast] = useState<Toast | null>(null);
     const [activeTab, setActiveTab] = useState<'isbn' | 'details'>('isbn');
 
     useEffect(() => {
