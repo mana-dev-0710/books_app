@@ -11,7 +11,7 @@ import MyBookList from "@/components/main/MyBookList";
 
 const Bookshelf = () => {
 
-  const { data: session, status } = useSession();
+  const { status } = useSession();
   const router = useRouter();
 
   useEffect(() => {

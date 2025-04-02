@@ -231,6 +231,7 @@ const MyBookList = () => {
                             <td className="px-3 py-2 text-start"></td>
                             <td className="hidden sm:table-cell px-3 py-2 text-start"></td>
                             <td className="hidden sm:table-cell min-w-[4rem] px-3 py-2 text-start"></td>
+                            <td className="hidden sm:table-cell min-w-[4rem] px-3 py-2 text-start"></td>
                             <td className="px-3 py-2 text-end"></td>
                         </tr>
                     </tbody>

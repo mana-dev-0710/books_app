@@ -4,13 +4,10 @@ services:
     build:
       context: .
     volumes:
-      - ./sns_app:/work
+      - ./books_app:/work
     ports:
       - ${APP_PORT}:3000
       - ${STUDIO_PORT}:5555
-    #environment:
-      #DATABASE_URL: mysql://${DB_USER}:${MYSQL_PASSWORD}@db3306:
-      #DATABASE_URL="mysql://dev:dev2025@db:3306/sns-db"
     networks:
       - default-network
   db:
@@ -24,7 +21,6 @@ services:
       TZ: ${TZ}
     ports:
       - ${DB_PORT}:3306
-    #command: --default-authentication-plugin=mysql_native_password
     volumes:
       - db_data:/var/lib/mysql
       - ./init:/docker-entrypoint-initdb.d
