@@ -11,7 +11,7 @@ async function GET() {
         const booksOfDbData: FavoriteBook[] = await selectDbData();
 
         // NDL情報取得
-        for (let bookOfDbData of booksOfDbData) {
+        for (const bookOfDbData of booksOfDbData) {
             const searchForm: SearchForm = { isbn: bookOfDbData.isbn };
 
             // NDL情報取得
