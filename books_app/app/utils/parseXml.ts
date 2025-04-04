@@ -1,5 +1,9 @@
 import { parseStringPromise } from "xml2js";
 
+type MetadataItem = {
+    [key: string]: string | string[] | { "$": { "rdf:resource": string } } | undefined;
+};
+
 /**
  * isbnでの検索時、返却されたXmlデータを1件分のJsonデータにparseする。
  * 
@@ -8,7 +12,7 @@ import { parseStringPromise } from "xml2js";
  */
 async function parseXmlToJsonByIsbn(xml: string): Promise<Record<string, string>[]> {
 
-    let resJsonArray: Record<string, string>[] = [];
+    const resJsonArray: Record<string, string>[] = [];
 
     try {
         const result = await parseStringPromise(xml);
@@ -28,7 +32,7 @@ async function parseXmlToJsonByIsbn(xml: string): Promise<Record<string, string>
             return defaultValue;
         };
 
-        let title = findFirstValidValue("title", "");
+        const title = findFirstValidValue("title", "");
         if (title === "") {
             console.warn("タイトルが見つかりませんでした");
             //　タイトル不明の場合は空のまま返却
@@ -49,6 +53,7 @@ async function parseXmlToJsonByIsbn(xml: string): Promise<Record<string, string>
 
         return resJsonArray;
     } catch (e) {
+        console.error("Xmlデータを1Jsonデータにparse中に予期せぬエラーが発生しました。（isbn検索）:", e);
         return resJsonArray;
     }
 
@@ -62,7 +67,7 @@ async function parseXmlToJsonByIsbn(xml: string): Promise<Record<string, string>
  */
 async function parseXmlToJson(xml: string): Promise<Record<string, string>[]> {
 
-    let resJsonArray: Record<string, string>[] = [];
+    const resJsonArray: Record<string, string>[] = [];
 
     try {
         const result = await parseStringPromise(xml);
@@ -149,6 +154,7 @@ async function parseXmlToJson(xml: string): Promise<Record<string, string>[]> {
         resJsonArray.push(...Object.values(isbnMap));
         return resJsonArray;
     } catch (e) {
+        console.error("Xmlデータを1Jsonデータにparse中に予期せぬエラーが発生しました。（詳細検索）:", e);
         return resJsonArray;
     }
 }
@@ -164,11 +170,17 @@ const validateIsbn = (isbn: string): string => {
  * @param metadata 書籍データの配列：XML形式
  * @returns JP-eコード：取得失敗した場合は空文字""
  */
-const getJpeCodeByIsbn = (metadata: (Record<string, any> | undefined)[]): string => {
-
+const getJpeCodeByIsbn = (metadata: MetadataItem[]): string => {
+    
     const seeAlsoUrls = metadata
         .flatMap(item => item?.["rdfs:seeAlso"] ?? [])
-        .map(item => item?.["$"]?.["rdf:resource"])
+        .map(item => {
+            // itemがオブジェクトであり、"$"が存在する場合のみアクセス
+            if (typeof item === 'object' && item !== null && "$" in item && item["$"]["rdf:resource"]) {
+                return item["$"]["rdf:resource"];
+            }
+            return undefined;
+        })
         .filter(url => url !== undefined);
 
     const jpeUrlRegex = /^https:\/\/www\.books\.or\.jp\/book-details\/([a-zA-Z0-9]{20})$/;

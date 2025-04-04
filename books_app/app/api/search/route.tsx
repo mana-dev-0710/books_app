@@ -23,7 +23,7 @@ async function GET(req: NextRequest) {
             });
             if (!validationResultIsbn.success) {
                 return NextResponse.json(
-                    { error: "バリデーションエラー" }, 
+                    { error: "バリデーションエラー" },
                     { status: 400 },
                 );
             }
@@ -35,7 +35,7 @@ async function GET(req: NextRequest) {
             });
             if (!validationResultDetails.success) {
                 return NextResponse.json(
-                    { error: "バリデーションエラー" }, 
+                    { error: "バリデーションエラー" },
                     { status: 400 },
                 );
             }
@@ -58,7 +58,11 @@ async function GET(req: NextRequest) {
             { status: 200 },
         );
     } catch (e) {
-        return NextResponse.json({ status: 500 });
+        console.error(e);
+        return NextResponse.json(
+            { error: "サーバーエラー" },
+            { status: 500 }
+        );
     }
 
 }
@@ -69,7 +73,7 @@ async function PUT(req: NextRequest) {
         const reqUrl = new URL(req.url);
         const isbn = reqUrl.searchParams.get("isbn");
         if (!isbn) return NextResponse.json(
-            { error: "ISBNが不正です。" },
+            { error: "パラメーターエラー" },
             { status: 400 }
         );
 
@@ -85,9 +89,15 @@ async function PUT(req: NextRequest) {
         // 本棚への登録
         await insertBookshelfData(isbn);
 
-        return NextResponse.json({ status: 200 });
+        return NextResponse.json(
+            { status: 200 }
+        );
     } catch (e) {
-        return NextResponse.json({ status: 500 });
+        console.error(e);
+        return NextResponse.json(
+            { error: "サーバーエラー" },
+            { status: 500 }
+        );
     }
 
 }

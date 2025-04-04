@@ -89,7 +89,8 @@ const Search = () => {
             } else {
                 setSearchError({ message: resData.error });
             }
-        } catch (err) {
+        } catch (e) {
+            console.error('書籍情報の編集処理エラー:', e);
             setSearchError({ message: "書籍情報検索中にエラーが発生しました。" });
         } finally {
             setSearchResultLoading(false);

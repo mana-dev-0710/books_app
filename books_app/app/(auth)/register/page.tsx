@@ -22,7 +22,7 @@ interface Error {
 }
 
 const Page = () => {
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
   const [resError, setResError] = useState<Error>();
   const [isRevealPassword, setIsRevealPassword] = useState(false);
   const [isRevealPasswordConfirm, setIsRevealPasswordConfirm] = useState(false);
@@ -30,7 +30,6 @@ const Page = () => {
   const {
     register,
     handleSubmit,
-    getValues,
     formState: { errors, isValid, isDirty },
   } = useForm<LoginForm>({
     mode: "onChange",

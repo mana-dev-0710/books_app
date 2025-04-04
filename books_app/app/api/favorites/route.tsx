@@ -39,7 +39,11 @@ async function GET() {
             { status: 200 },
         );
     } catch (e) {
-        return NextResponse.json({ status: 500 });
+        console.error(e);
+        return NextResponse.json(
+          { error: "サーバーエラー" },
+          { status: 500 }
+        );
     }
 
 }
@@ -60,7 +64,11 @@ async function POST(req: NextRequest) {
 
         return NextResponse.json( { status: 200 } );
     } catch (e) {
-        return NextResponse.json( { status: 500 } );
+        console.error(e);
+        return NextResponse.json(
+          { error: "サーバーエラー" },
+          { status: 500 }
+        );
     }
 
 }
@@ -81,7 +89,11 @@ async function DELETE(req: NextRequest) {
 
         return NextResponse.json( { status: 200 } );
     } catch (e) {
-        return NextResponse.json( { status: 500 } );
+        console.error(e);
+        return NextResponse.json(
+          { error: "サーバーエラー" },
+          { status: 500 }
+        );
     }
 
 }
