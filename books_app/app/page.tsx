@@ -1,15 +1,25 @@
 'use client';
 
 import { useSession } from "next-auth/react";
-import { redirect } from "next/navigation";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
-export default async function Home() {
+function Home() {
 
-  const { data: session } = useSession();
-  if (session) {
-    redirect("/bookshelf");
-  } else {
-    redirect("/login");
-  }
+  const { data: session, status } = useSession();
+  const router = useRouter();
 
+  useEffect(() => {
+    if (status === "loading") return; // ローディング中は待機
+
+    if (session) {
+      router.replace("/bookshelf");
+    } else {
+      router.replace("/login");
+    }
+  }, [session, status, router]);
+
+  return null;
 }
+
+export default Home;
