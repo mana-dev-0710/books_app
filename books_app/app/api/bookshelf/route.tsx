@@ -25,7 +25,7 @@ async function GET() {
     const booksOfDbData: MyBook[] = await fetchDbData();
 
     // DBから取得したisbnをパラメータとしてNDL情報取得
-    for (let bookOfDbData of booksOfDbData) {
+    for (const bookOfDbData of booksOfDbData) {
       const searchForm: SearchForm = { isbn: bookOfDbData.isbn };
 
       // NDL情報取得

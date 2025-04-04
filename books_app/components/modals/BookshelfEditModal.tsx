@@ -1,6 +1,6 @@
 'use client';
 
-import { Modal, ModalBody, ModalFooter, ModalHeader, Accordion, AccordionPanel, AccordionTitle, AccordionContent, Datepicker } from 'flowbite-react';
+import { Modal, ModalBody, ModalFooter, ModalHeader, Accordion, AccordionPanel, AccordionTitle, AccordionContent } from 'flowbite-react';
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { validationBookshelfEditSchema } from "app/utils/validationSchema";
