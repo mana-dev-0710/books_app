@@ -21,34 +21,39 @@ export async function POST(req: NextRequest) {
       validationRegistSchema.safeParseAsync(data)
     ]);
 
-    let errors = validationResult.success ? {} : validationResult.error.flatten().fieldErrors;
+    const errors = validationResult.success ? {} : validationResult.error.flatten().fieldErrors;
     //スプレッド構文で広げてから代入
     if (user) {
       errors.email = [...(errors.email || []), "このメールアドレスは既に使用されています。"];
     }
 
     if (Object.keys(errors).length > 0) {
-      return new NextResponse(JSON.stringify({ errors }), { status: 400 });
+      return NextResponse.json(
+        { error: "パラメーターエラー" },
+        { status: 400 }
+      );
     }
 
     // パスワードをハッシュ化してユーザーを作成
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    try {
-      await prisma.user.create({
-        data: {
-          email: email,
-          name: userName,
-          password: hashedPassword,
-        },
-      });
-    } catch (e) {
-      return NextResponse.json({ error: "新規登録に失敗しました。" }, { status: 500 });
-    }
+    await prisma.user.create({
+      data: {
+        email: email,
+        name: userName,
+        password: hashedPassword,
+      },
+    });
+
   } catch (e) {
-    return NextResponse.json({ error: "新規登録中に予期せぬエラーが発生しました。" }, { status: 500 });
+    console.error(e);
+    return NextResponse.json(
+      { error: "サーバーエラー" },
+      { status: 500 }
+    );
   }
-  
-  return new NextResponse(JSON.stringify({ message: "新規登録に成功しました。" }), { status: 201 });
+  return NextResponse.json(
+    { status: 200 }
+  );
 
 }

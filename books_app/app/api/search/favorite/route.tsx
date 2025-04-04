@@ -15,15 +15,15 @@ async function PUT(req: NextRequest) {
         const isbn = reqUrl.searchParams.get("isbn");
 
         if (!isbn) return NextResponse.json(
-            { error: "ISBNが不正です。" }, 
-            { status: 400 }, 
+            { error: "パラメーターエラー" },
+            { status: 400 }
         );
 
         //バリデーション
         const validationResult = await validationSearchSchemaIsbn.safeParseAsync({ isbn: isbn });
         if (!validationResult.success) {
             return NextResponse.json(
-                { error: "バリデーションエラー" }, 
+                { error: "バリデーションエラー" },
                 { status: 400 }
             );
         }
@@ -31,9 +31,15 @@ async function PUT(req: NextRequest) {
         // DBにお気に入り情報を登録
         await insertFavoriteData(isbn);
 
-        return NextResponse.json({ status: 200 });
+        return NextResponse.json(
+            { status: 200 }
+        );
     } catch (e) {
-        return NextResponse.json( { status: 500 } );
+        console.error(e);
+        return NextResponse.json(
+            { error: "サーバーエラー" },
+            { status: 500 }
+        );
     }
 
 }
@@ -44,7 +50,7 @@ async function DELETE(req: NextRequest) {
         const reqUrl = new URL(req.url);
         const isbn = reqUrl.searchParams.get("isbn");
         if (!isbn) return NextResponse.json(
-            { error: "ISBNが不正です。" }, 
+            { error: "ISBNが不正です。" },
             { status: 400 }
         );
 
@@ -52,7 +58,7 @@ async function DELETE(req: NextRequest) {
         const validationResult = await validationSearchSchemaIsbn.safeParseAsync({ isbn: isbn });
         if (!validationResult.success) {
             return NextResponse.json(
-                { error: "バリデーションエラー" }, 
+                { error: "バリデーションエラー" },
                 { status: 400 }
             );
         }
@@ -60,9 +66,15 @@ async function DELETE(req: NextRequest) {
         // DBにお気に入り情報を削除
         await deleteFavoriteData(isbn);
 
-        return NextResponse.json( { status: 200 } );
+        return NextResponse.json(
+            { status: 200 }
+        );
     } catch (e) {
-        return NextResponse.json( { status: 500 } );
+        console.error(e);
+        return NextResponse.json(
+            { error: "サーバーエラー" },
+            { status: 500 }
+        );
     }
 
 }

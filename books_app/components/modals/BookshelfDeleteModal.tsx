@@ -6,7 +6,7 @@ import { MyBook } from "@/types/bookTypes"
 type BookshelfDeleteModalProp = {
   isDeleteModalOpen: boolean;
   handleCloseDeleteModal: () => void;
-  handleDeleteConfirm: (data: any) => void;
+  handleDeleteConfirm: () => void;
   className?: string;
   size?: string;
   book: MyBook | null;

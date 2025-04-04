@@ -6,7 +6,7 @@ import { getImageUrl } from "app/api/search/services/fetchNdlImgUrl";
 const maximumRecords = "50";
 
 async function fetchNdlData(searchForm: SearchForm): Promise<BaseBook[]> {
-    let books: BaseBook[] = [];
+    const books: BaseBook[] = [];
 
     const isbn = searchForm.isbn;
     const title = searchForm.title;

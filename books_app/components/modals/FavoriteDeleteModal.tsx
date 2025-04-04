@@ -6,7 +6,7 @@ import { FavoriteBook } from "@/types/bookTypes"
 type FavoriteDeleteModalProp = {
   isDeleteModalOpen: boolean;
   handleCloseDeleteModal: () => void;
-  handleDeleteConfirm: (data: any) => void;
+  handleDeleteConfirm: () => void;
   className?: string;
   size?: string;
   book: FavoriteBook | null;

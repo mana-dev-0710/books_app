@@ -32,13 +32,22 @@ const BookCard = ({ book, setToast }: BookCardProp) => {
                 const res = await fetch(`/api/search/favorite?isbn=${book.isbn}`, {
                     method: "DELETE"
                 });
+
+                if(!res.ok) {
+                    setToast({ message: "お気に入りの更新に失敗しました。", type: "error" });
+                    return;
+                }
                 alertMessage = "お気に入りから削除しました。";
             } else {
                 // お気に入り登録
                 const res = await fetch(`/api/search/favorite?isbn=${book.isbn}`, {
                     method: 'PUT',
                 });
-                alertMessage = "お気に入りに追加しました。";
+
+                if(!res.ok) {
+                    setToast({ message: "お気に入りの更新に失敗しました。", type: "error" });
+                    return;
+                }
             }
             setIsFavorite(!isFavorite);
             setToast({ message: alertMessage, type: "success" });

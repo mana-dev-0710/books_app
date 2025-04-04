@@ -52,6 +52,7 @@ async function GET() {
       { status: 200 }
     );
   } catch (e) {
+    console.error(e);
     return NextResponse.json(
       { error: "サーバーエラー" },
       { status: 500 }
