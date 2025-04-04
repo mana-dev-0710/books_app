@@ -2,7 +2,6 @@
 
 import { useSession } from "next-auth/react";
 import Image from "next/image";
-import Icons from "components/icons/Icons";
 
 type ProfileProp = {
     className: string;
@@ -13,7 +12,7 @@ const defaultProfileImage = '/images/default-profile.png';
 
 const Profile = ({ className, imageClassName }: ProfileProp) => {
 
-    const { data: session, status } = useSession();
+    const { data: session } = useSession();
 
     return (
         <div className={`${className}`}>

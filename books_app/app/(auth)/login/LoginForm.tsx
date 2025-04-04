@@ -21,7 +21,7 @@ interface Error {
 }
 
 function LoginForm() {
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
   const [resError, setResError] = useState<Error>();
   const [isLoading, setIsLoading] = useState(false);
   const [isRevealPassword, setIsRevealPassword] = useState(false);
