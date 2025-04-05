@@ -5,6 +5,8 @@ import { SearchForm } from "@/types/formTypes";
 import { fetchNdlData } from "app/api/search/services/fetchNdlData";
 import { selectDbData, insertBookshelfData } from "app/api/search/services/fetchDbData";
 
+export const runtime = 'edge'; // 外部API接続時のタイムアウト回避のため、Edge Functionとして扱う
+
 async function GET(req: NextRequest) {
 
     const searchForm: SearchForm = {};
