@@ -6,8 +6,6 @@ import { getImageUrl } from "app/api/search/services/fetchNdlImgUrl";
 const maximumRecords = "50";
 
 async function fetchNdlData(searchForm: SearchForm): Promise<BaseBook[]> {
-    const books: BaseBook[] = [];
-
     const isbn = searchForm.isbn;
     const title = searchForm.title;
     const author = searchForm.author;
@@ -40,37 +38,42 @@ async function fetchNdlData(searchForm: SearchForm): Promise<BaseBook[]> {
 
         if (!ndlRes.ok) {
             console.error("NDL情報取得処理に失敗しました。");
-            return books;
+            return [];
         }
 
         const resNdlXml = await ndlRes.text();
-        // XMLをJSONに変換
-        const resNdlJson = isbn ? await parseXmlToJsonByIsbn(resNdlXml) : await parseXmlToJson(resNdlXml);
+        const resNdlJson = isbn
+            ? await parseXmlToJsonByIsbn(resNdlXml)
+            : await parseXmlToJson(resNdlXml);
 
-        for (const resBook of resNdlJson) {
-            if (isbn) { // ISBN検索の場合はパラメータのISBNをそのまま設定
-                resBook.isbn = isbn
-            }
+        // 並列で書影URLを取得
+        const books: BaseBook[] = await Promise.all(
+            resNdlJson.map(async (resBook) => {
+                if (isbn) {
+                    resBook.isbn = isbn; // ISBN検索なら補完
+                }
 
-            books.push({
-                isbn: resBook.isbn,
-                title: resBook.title,
-                volume: resBook.volume,
-                author: resBook.author,
-                publisher: resBook.publisher,
-                genre: resBook.genre,
-                publicationDate: resBook.publicationDate,
-                jpeCode: resBook.jpeCode,
-                imgUrl: await getImageUrl(resBook.isbn, resBook.jpeCode),  // 有効な書影検索用URLを設定
-            });
-        };
+                const imgUrl = await getImageUrl(resBook.isbn, resBook.jpeCode); // 書影URLの非同期取得（並列化）
+
+                return {
+                    isbn: resBook.isbn,
+                    title: resBook.title,
+                    volume: resBook.volume,
+                    author: resBook.author,
+                    publisher: resBook.publisher,
+                    genre: resBook.genre,
+                    publicationDate: resBook.publicationDate,
+                    jpeCode: resBook.jpeCode,
+                    imgUrl,
+                };
+            })
+        );
 
         return books;
     } catch (e) {
         console.error("NDL情報取得処理中に予期せぬエラーが発生しました。:", e);
-        return books;
+        return [];
     }
-
 }
 
 export { fetchNdlData };
