@@ -34,7 +34,7 @@ const BookCard = ({ book, setToast }: BookCardProp) => {
                 });
 
                 if(!res.ok) {
-                    setToast({ message: "お気に入りの更新に失敗しました。", type: "error" });
+                    setToast({ message: "お気に入りの削除に失敗しました。", type: "error" });
                     return;
                 }
                 alertMessage = "お気に入りから削除しました。";
@@ -45,9 +45,10 @@ const BookCard = ({ book, setToast }: BookCardProp) => {
                 });
 
                 if(!res.ok) {
-                    setToast({ message: "お気に入りの更新に失敗しました。", type: "error" });
+                    setToast({ message: "お気に入りの登録に失敗しました。", type: "error" });
                     return;
                 }
+                alertMessage = "お気に入りに登録しました。";
             }
             setIsFavorite(!isFavorite);
             setToast({ message: alertMessage, type: "success" });

@@ -48,7 +48,7 @@ const ToastNotification: React.FC<ToastProps> = ({ className = "", message, type
     <div
       className={`${className} transition-transform duration-500 ${isVisible ? "ease-in translate-x-0 opacity-100" : "ease-out translate-x-[150%] opacity-0"}`}
     >
-      <Toast>
+      <Toast className="dark:bg-white">
         <div className={`inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${toastStyles[type].bg}`}>
           {toastStyles[type].icon}
         </div>

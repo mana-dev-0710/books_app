@@ -37,7 +37,8 @@ const IsbnSearchForm: React.FC<IsbnSearchFormProps> = ({ searchBooks }) => {
       <input
         id="isbn"
         type="text"
-        className="max-w-40 p-1 pl-2 text-xs md:text-sm border focus:outline-primary-400"
+        placeholder="※ハイフン抜きで入力"
+        className="max-w-40 p-1 pl-2 text-xs md:text-sm placeholder-gray-400 border focus:outline-primary-400"
         {...register("isbn")}
       />
       <p className="p-1 text-xss text-red-500">{errors.isbn?.message as React.ReactNode}</p>
