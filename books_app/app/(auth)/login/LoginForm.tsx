@@ -54,7 +54,6 @@ function LoginForm() {
       signIn("credentials", { email: data.email, password: data.password });
     } else {
       const resData = await res.json();
-      console.log(resData);
       setResError({ loginCheck: resData.message });
       setIsLoading(false);
     }
@@ -64,7 +63,7 @@ function LoginForm() {
   if (session) redirect("/bookshelf");
 
   return (
-    <div className="flex flex-col items-center justify-center w-72 sm:w-96 md:w-116 px-2 py-12 bg-secondary-50 shadow-lg">
+    <div className="flex flex-col items-center justify-center w-72 sm:w-96 md:w-116 px-2 py-12 bg-secondary-50 shadow-lg dark:text-gray-800">
       <div className="flex items-center">
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -93,7 +92,7 @@ function LoginForm() {
               id="email"
               type="email"
               placeholder="ilovebooks@email.com"
-              className="w-full p-1 pl-2 text-sm border focus:outline-secondary-400"
+              className="w-full p-1 pl-2 text-sm placeholder-gray-400 border focus:outline-secondary-400"
               {...register("email")}
             />
             <p className="p-1 text-xss text-red-500">

@@ -28,20 +28,20 @@ const BookshelfDeleteModal: React.FC<BookshelfDeleteModalProp> = ({
       className={className}
       size={size}
     >
-      <div className="max-w-md w-full">
+      <div className="max-w-md w-full dark:bg-white dark:text-gray-800 rounded-lg overflow-hidden">
 
         {book === null ? (
           <>
-            <ModalHeader className="flex items-center rounded-t-lg border-none border-x border-t">
-              <div className="">
+            <ModalHeader className="flex items-center border-none border-x border-t">
+              <div className="dark:text-gray-800">
                 <p className="text-sm font-semibold">データの取得に失敗しました。削除できません。</p>
               </div>
             </ModalHeader>
           </>
         ) : (
           <>
-            <ModalHeader className="flex items-center rounded-t-lg border-none border-x border-t">
-              <div className="">
+            <ModalHeader className="flex items-center border-none border-x border-t dark:hover:text-gray-700">
+              <div className=" dark:text-gray-800">
                 <p className="text-sm font-semibold">以下データを本棚から削除します。</p>
                 <p className="text-sm font-semibold">本棚から削除すると、同書籍の評価も削除されます。</p>
                 <p className="text-sm font-semibold">よろしいですか？</p>
@@ -86,9 +86,12 @@ const BookshelfDeleteModal: React.FC<BookshelfDeleteModalProp> = ({
                 </ul>
 
                 {book.isRated && book.rating ? (
-                  <Accordion className="mt-3">
+                  <Accordion className="mt-3 dark:border dark:border-gray-200">
                     <AccordionPanel>
-                      <AccordionTitle className="flex w-full h-8 items-center justify-between p-3 text-left font-medium focus:ring-0 first:rounded-t-lg last:rounded-b-lg">
+                      <AccordionTitle
+                        className="flex w-full h-8 items-center justify-between p-3 text-left font-medium focus:ring-0 first:rounded-t-lg last:rounded-b-lg
+                        dark:bg-gray-100 dark:hover:bg-gray-100 dark:text-gray-800"
+                      >
                         評価内容
                       </AccordionTitle>
                       <AccordionContent>

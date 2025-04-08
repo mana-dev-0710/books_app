@@ -104,7 +104,7 @@ const MyBookList = () => {
                 bookshelfId: selectedBook.bookshelfId,
                 finishedReading: data.finishedReading ?? false,
                 finishedAt: data.finishedAt || "",
-                isRated: data.rating ? true : false, 
+                isRated: data.rating ? true : false,
                 reviewTitle: data.reviewTitle || "",
                 rating: data.rating || "",
                 reviewContent: data.reviewContent || "",
@@ -215,10 +215,29 @@ const MyBookList = () => {
                                     }
                                 </td>
                                 <td className="px-3 py-1">
-                                    <Dropdown inline={true} placement="bottom-end" className="btn btn-ghost btn-sm btn-circle">
-                                        <Dropdown.Item onClick={() => handleOpenDetailModal(book)}>詳細</Dropdown.Item>
-                                        <Dropdown.Item onClick={() => handleOpenEditModal(book)}>編集</Dropdown.Item>
-                                        <Dropdown.Item onClick={() => handleOpenDeleteModal(book)}>削除</Dropdown.Item>
+                                    <Dropdown
+                                        inline={true}
+                                        placement="bottom-end"
+                                        className="btn btn-ghost btn-sm btn-circle dark:bg-white-100 dark:text-gray-800"
+                                    >
+                                        <Dropdown.Item
+                                            onClick={() => handleOpenDetailModal(book)}
+                                            className="dark:hover:bg-gray-100 dark:hover:text-gray-700"
+                                        >
+                                            詳細
+                                        </Dropdown.Item>
+                                        <Dropdown.Item
+                                            onClick={() => handleOpenEditModal(book)}
+                                            className="dark:hover:bg-gray-100 dark:hover:text-gray-700"
+                                        >
+                                            編集
+                                        </Dropdown.Item>
+                                        <Dropdown.Item
+                                            onClick={() => handleOpenDeleteModal(book)}
+                                            className="dark:hover:bg-gray-100 dark:hover:text-gray-700"
+                                        >
+                                            削除
+                                        </Dropdown.Item>
                                     </Dropdown>
                                 </td>
                             </tr>
