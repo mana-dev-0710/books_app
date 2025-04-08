@@ -26,20 +26,20 @@ const FavoriteDetailModal: React.FC<FavoriteDetailModalProp> = ({
       className={className}
       size={size}
     >
-      <div className="max-w-md w-full">
+      <div className="max-w-md w-full dark:bg-white dark:text-gray-800 rounded-lg overflow-hidden">
 
         {book === null ? (
           <>
-            <ModalHeader className="flex items-center rounded-t-lg border-none border-x border-t">
-              <div className="">
+            <ModalHeader className="flex items-center border-none border-x border-t">
+              <div className="dark:text-gray-800">
                 <p className="text-sm font-semibold">データの取得に失敗しました。削除できません。</p>
               </div>
             </ModalHeader>
           </>
         ) : (
           <>
-            <ModalHeader className="flex items-center rounded-t-lg border-none border-x border-t">
-              <p className="text-sm font-semibold">書籍の詳細情報</p>
+            <ModalHeader className="flex items-center border-none border-x border-t">
+              <p className="text-sm font-semibol dark:text-gray-800">書籍の詳細情報</p>
             </ModalHeader>
             <ModalBody className="px-5 py-3 border-x">
               <div className="p-4 border border-gray-400">

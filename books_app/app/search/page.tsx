@@ -45,7 +45,7 @@ const Search = () => {
 
     // ローディングまたは未認証時にローディング画面を表示
     if (status === "loading" || status === "unauthenticated") {
-        return <Loading className="h-screen flex justify-center items-center bg-secondary-50" />
+        return <Loading className="h-screen flex justify-center items-center bg-secondary-50 dark:bg-secondary-50" />
     }
 
     // 書籍検索の処理
@@ -85,7 +85,11 @@ const Search = () => {
 
             const resData = await res.json();
             if (res.ok) {
-                setBooks(resData.books);
+                if (resData.books && resData.books.length! > 0) {
+                    setBooks(resData.books);
+                } else {
+                    setSearchError({ message: "検索結果が見つかりませんでした。" });
+                }
             } else {
                 setSearchError({ message: resData.error });
             }
@@ -100,7 +104,7 @@ const Search = () => {
 
     return (
         <>
-            <div className="font-[family-name:var(--font-geist-sans)] overflow-hidden">
+            <div className="font-[family-name:var(--font-geist-sans)] overflow-hidden dark:text-gray-800 bg-secondary-50">
                 <Header />
                 <main className="flex h-screen pt-12">
                     <div className="hidden lg:flex lg:basis-1/4 p-5 pt-10 bg-secondary-50">
@@ -109,12 +113,13 @@ const Search = () => {
                     <div className="lg:basis-3/4 w-full h-screen bg-secondary-50 overflow-x-auto">
                         <div className="flex flex-col h-full px-5 py-3">
                             <Title titleName="書籍検索" />
-                            <div className="pb-3 border-b border-gray-300">
-                                <Tabs onActiveTabChange={(tab) => setActiveTab(tab === 0 ? "isbn" : "details")}
+                            <div className="pb-3 border-b border-gray-200 dark:border-black">
+                                <Tabs
+                                    onActiveTabChange={(tab) => setActiveTab(tab === 0 ? "isbn" : "details")}
                                     variant="underline"
                                     theme={{
                                         tablist: {
-                                            base: "flex border-b border-gray-300",
+                                            base: "flex border-b",
                                             tabitem: {
                                                 base: "px-4 py-2 text-xs",
                                                 variant: {
@@ -147,14 +152,16 @@ const Search = () => {
                                     </p>
                                     <div className="relative flex-1">
                                         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 overflow-y-auto max-h-[calc(100vh-250px)] pr-1 py-3 pb-16">
-                                            {Array.isArray(books) && books.map((book, index) => (
-                                                <BookCard
-                                                    key={index}
-                                                    book={book}
-                                                    setToast={setToast}
-                                                    setError={setSearchError}
-                                                />
-                                            ))}
+                                            {books?.length > 0 &&
+                                                books.map((book, index) => (
+                                                    <BookCard
+                                                        key={index}
+                                                        book={book}
+                                                        setToast={setToast}
+                                                        setError={setSearchError}
+                                                    />
+                                                ))
+                                            }
                                         </div>
                                     </div>
                                 </>

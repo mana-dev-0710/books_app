@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { signOut } from "next-auth/react"
 import Icons from "components/icons/Icons";
 import Menu from "components/layout/Menu";
@@ -8,6 +8,8 @@ import Menu from "components/layout/Menu";
 const Header = () => {
 
   const [openMenu, setOpenMenu] = useState(false);
+  const menuRef = useRef<HTMLDivElement | null>(null);
+  const iconRef = useRef<HTMLDivElement | null>(null);
 
   const handleMenuOpen = () => {
     setOpenMenu(!openMenu);
@@ -17,11 +19,37 @@ const Header = () => {
     setOpenMenu(false);
   }, []);
 
+  // メニュー範囲外押下の検知（押下時、閉じる処理実行）
+  useEffect(() => {
+
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Node;
+      if (menuRef.current &&
+        !menuRef.current.contains(target) &&
+        iconRef.current &&
+        !iconRef.current.contains(target)
+      ) {
+        setOpenMenu(false);
+      }
+    };
+
+    if (openMenu) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+
+  }, [openMenu]);
+
   return (
     <div>
-      <header className="fixed top-0 min-w-screen left-0 w-full bg-white z-50 shadow-md">
+      <header className="fixed top-0 min-w-screen left-0 w-full bg-white z-50">
         <nav className="flex items-center justify-between px-4 py-2 flex-wrap w-full bg-primary-600 text-white">
-          <div className="lg:hidden text-sm align-content-center">
+          <div
+            ref={iconRef}
+            className="lg:hidden text-sm align-content-center">
             <Icons
               name="hamburger"
               className={"h-6 w-6"}
@@ -45,6 +73,7 @@ const Header = () => {
         </nav>
       </header >
       <div
+        ref={menuRef}
         className={`absolute left-0 pt-12 z-10 bg-gray-100 shadow-sm transition-all duration-300 ease-in-out ${openMenu
           ? 'opacity-100 translate-y-0'
           : 'opacity-0 -translate-y-2 pointer-events-none'

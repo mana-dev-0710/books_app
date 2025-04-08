@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { validationRegistSchema } from "app/utils/validationSchema";
+import Loading from "components/layout/Loading";
 
 interface LoginForm {
   email: string;
@@ -15,10 +16,10 @@ interface LoginForm {
 }
 
 interface Error {
-  email: [];
-  userName: [];
-  password: [];
-  passwordConfirm: [];
+  email?: string[];
+  userName?: string[];
+  password?: string[];
+  passwordConfirm?: string[];
 }
 
 const Page = () => {
@@ -35,6 +36,13 @@ const Page = () => {
     mode: "onChange",
     resolver: zodResolver(validationRegistSchema),
   });
+
+  const { status } = useSession();
+
+  // ローディング時にローディング画面を表示
+  if (status === "loading") {
+    return <Loading className="h-screen w-screen flex justify-center items-center bg-secondary-50 dark:bg-secondary-50" />
+  }
 
   const togglePassword = () => {
     setIsRevealPassword((prevState) => !prevState);
@@ -68,7 +76,7 @@ const Page = () => {
       if (signInRes?.ok) {
         redirect("/bookshelf");
       } else {
-       //setResError({ passwordConfirm: ["ユーザー登録に失敗しました。"] });
+        setResError({ passwordConfirm: ["ユーザー登録に失敗しました。"] });
         return;
       }
     } else {
@@ -81,8 +89,7 @@ const Page = () => {
 
   };
   return (
-    <div className="flex items-center justify-center bg-secondary-400 min-h-screen py-8">
-
+    <div className="flex items-center justify-center bg-secondary-400 min-h-screen py-8 dark:text-gray-800 ">
       <div className="flex flex-col w-72 sm:w-96 md:w-116 items-center justify-center px-2 py-12 bg-secondary-50 shadow-lg">
         <div className="flex items-center">
           <svg
@@ -112,7 +119,7 @@ const Page = () => {
                 type="text"
                 id="email"
                 placeholder="ilovebooks@email.com"
-                className="w-full p-1 pl-2 text-sm border focus:outline-primary-400"
+                className="w-full p-1 pl-2 text-sm placeholder-gray-400 border focus:outline-primary-400"
                 {...register("email")}
               />
               <p className="p-1 text-xss text-red-500">
@@ -130,7 +137,7 @@ const Page = () => {
                 type="text"
                 id="userName"
                 placeholder="読書大臣"
-                className="w-full p-1 pl-2 text-sm border focus:outline-primary-400"
+                className="w-full p-1 pl-2 text-sm placeholder-gray-400 border focus:outline-primary-400"
                 {...register("userName")}
               />
               <p className="p-1 text-xss text-red-500">

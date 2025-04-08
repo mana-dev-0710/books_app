@@ -55,7 +55,7 @@ const BookshelfEditModal: React.FC<BookshelfEditModalProp> = ({
 
     // readingStatusの変更時にisFinishedReadingを更新
     const handleReadingStatusChange = (value: string) => {
-        const valueIsFinishedReading : boolean = (value === "finishedReading")
+        const valueIsFinishedReading: boolean = (value === "finishedReading")
 
         setIsFinishedReading(valueIsFinishedReading);
         if (!valueIsFinishedReading) {
@@ -80,12 +80,12 @@ const BookshelfEditModal: React.FC<BookshelfEditModalProp> = ({
             className={className}
             size={size}
         >
-            <div className="max-w-md w-full">
+            <div className="max-w-md w-full dark:bg-white dark:text-gray-800 rounded-lg overflow-hidden">
 
                 {book === null ? (
                     <>
-                        <ModalHeader className="flex items-center rounded-t-lg border-none border-x border-t">
-                            <div className="">
+                        <ModalHeader className="flex items-center border-none border-x border-t">
+                            <div className="dark:text-gray-800">
                                 <p className="text-sm font-semibold">データの取得に失敗しました。編集できません。</p>
                             </div>
                         </ModalHeader>
@@ -93,16 +93,19 @@ const BookshelfEditModal: React.FC<BookshelfEditModalProp> = ({
                 ) : (
                     <>
                         <form onSubmit={handleSubmit(onSubmit)}>
-                            <ModalHeader className="flex items-center rounded-t-lg border-none border-x border-t">
+                            <ModalHeader className="flex items-center border-none border-x border-t">
                                 <div className="">
-                                    <p className="text-sm font-semibold">書籍情報の編集</p>
+                                    <p className="text-sm font-semibold dark:text-gray-800">書籍情報の編集</p>
                                 </div>
                             </ModalHeader>
                             <ModalBody className="px-5 py-3 border-x">
                                 <div className="p-4 border border-gray-400">
-                                    <Accordion>
+                                    <Accordion className="dark:border dark:border-gray-200">
                                         <AccordionPanel>
-                                            <AccordionTitle className="flex w-full h-8 items-center justify-between p-4 text-left text-sm focus:ring-0 first:rounded-t-lg last:rounded-b-lg">
+                                            <AccordionTitle
+                                                className="flex w-full h-8 items-center justify-between p-4 text-left text-sm text-gray-800 focus:ring-0 first:rounded-t-lg last:rounded-b-lg
+                                                dark:bg-gray-100 dark:hover:bg-gray-100 dark:text-gray-800"
+                                            >
                                                 書籍情報
                                             </AccordionTitle>
                                             <AccordionContent>

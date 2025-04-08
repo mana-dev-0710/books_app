@@ -28,20 +28,20 @@ const FavoriteDeleteModal: React.FC<FavoriteDeleteModalProp> = ({
       className={className}
       size={size}
     >
-      <div className="max-w-md w-full">
+      <div className="max-w-md w-full dark:bg-white dark:text-gray-800 rounded-lg overflow-hidden">
 
         {book === null ? (
           <>
-            <ModalHeader className="rounded-t-lg border-none border-x border-t">
-              <div className="">
+            <ModalHeader className="border-none border-x border-t">
+              <div className="dark:text-gray-800">
                 <p className="text-sm font-semibold">データの取得に失敗しました。削除できません。</p>
               </div>
             </ModalHeader>
           </>
         ) : (
           <>
-            <ModalHeader className="rounded-t-lg border-none border-x border-t">
-              <div className="">
+            <ModalHeader className="border-none border-x border-t">
+              <div className="dark:text-gray-800">
                 <p className="text-sm font-semibold">以下データをお気に入りから削除します。</p>
                 <p className="text-sm font-semibold">よろしいですか？</p>
                 <p className="mt-1 text-xs text-red-600">※この操作は元に戻せません。</p>

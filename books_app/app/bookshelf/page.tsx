@@ -23,18 +23,17 @@ const Bookshelf = () => {
 
   // ローディングまたは未認証時にローディング画面を表示
   if (status === "loading" || status === "unauthenticated") {
-    return <Loading className="h-screen flex justify-center items-center bg-secondary-50" />
+    return <Loading className="h-screen flex justify-center items-center bg-secondary-50 dark:bg-secondary-50" />
   }
 
   return (
-    <div className="font-[family-name:var(--font-geist-sans)]">
+    <div className="font-[family-name:var(--font-geist-sans)] dark:text-gray-800 bg-secondary-50">
       <Header />
       <main className="flex pt-12">
         <div className="hidden lg:flex lg:basis-1/4 p-5 pt-10 bg-secondary-50">
           <Sidebar />
         </div>
         <div className="w-full lg:basis-3/4 h-screen bg-secondary-50">
-          {/* TODO:テーブル部分調整、ヘッダー部にフィルター機能追加（以下、仮） */}
           <div className="flex flex-col px-5 py-3">
             <div className="pt-2 pb-1 font-semibold">
               <Title titleName="マイ本棚" />
