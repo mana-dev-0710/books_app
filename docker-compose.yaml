@@ -13,21 +13,17 @@ services:
     networks:
       - default-network
   db:
-    image: mysql:8
+    image: postgres:15
     container_name: db-container
     environment: 
-      MYSQL_ROOT_PASSWORD: ${ROOT_PASS}
-      MYSQL_DATABASE: ${DB_NAME}
-      MYSQL_USER: ${DB_USER}
-      MYSQL_PASSWORD: ${DB_PASS}
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASS}
       TZ: ${TZ}
     ports:
-      - ${DB_PORT}:3306
+      - ${DB_PORT}:5432
     volumes:
-      - db_data:/var/lib/mysql
-      - ./init:/docker-entrypoint-initdb.d
-      - ./database/initialize:/docker-entrypoint-initdb.d
-      - ./database/config/my.cnf:/etc/mysql/conf.d/my.cnf
+      - db_data:/var/lib/postgresql
     networks:
       - default-network
 

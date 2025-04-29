@@ -85,7 +85,7 @@ const Search = () => {
 
             const resData = await res.json();
             if (res.ok) {
-                if (resData.books && resData.books.length! > 0) {
+                if (Array.isArray(resData.books) && resData.books.length > 0) {
                     setBooks(resData.books);
                 } else {
                     setSearchError({ message: "検索結果が見つかりませんでした。" });
@@ -152,15 +152,17 @@ const Search = () => {
                                     </p>
                                     <div className="relative flex-1">
                                         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 overflow-y-auto max-h-[calc(100vh-250px)] pr-1 py-3 pb-16">
-                                            {books?.length > 0 &&
-                                                books.map((book, index) => (
-                                                    <BookCard
-                                                        key={index}
-                                                        book={book}
-                                                        setToast={setToast}
-                                                        setError={setSearchError}
-                                                    />
-                                                ))
+                                            {Array.isArray(books) && books.length > 0 ? (books.map((book, index) => (
+                                                <BookCard
+                                                    key={index}
+                                                    book={book}
+                                                    setToast={setToast}
+                                                    setError={setSearchError}
+                                                />
+                                            ))
+                                            ) : (
+                                                <p></p>
+                                            )
                                             }
                                         </div>
                                     </div>
