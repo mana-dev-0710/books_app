@@ -1,5 +1,0 @@
-REVOKE USAGE ON *.* FROM `dev`@`%`;
-REVOKE ALL PRIVILEGES ON `books-db`.* FROM `dev`@`%`;
-
-GRANT ALL PRIVILEGES ON *.* TO `dev`@`%`;
-FLUSH PRIVILEGES;
