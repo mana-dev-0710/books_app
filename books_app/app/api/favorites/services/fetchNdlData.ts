@@ -77,3 +77,4 @@ async function fetchNdlData(searchForm: SearchForm): Promise<BaseBook[]> {
 }
 
 export { fetchNdlData };
+export const maxDuration = 60;

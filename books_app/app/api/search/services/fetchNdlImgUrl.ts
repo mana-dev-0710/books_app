@@ -40,3 +40,4 @@ async function getImageUrl(isbn: string | undefined | null, jpeCode: string | un
 }
 
 export { getImageUrl };
+export const maxDuration = 60;
