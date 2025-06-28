@@ -1,0 +1,18 @@
+version: "3.9"
+
+services:
+  app:
+    env_file:
+      - .env.production
+    command: sh -c "npm ci && npm run build && npm run start"
+    volumes:
+      - /app:/work
+    ports:
+      - ${APP_PORT}:3000
+      - ${STUDIO_PORT}:5555
+
+  db:
+    env_file:
+      - .env.production
+    ports:
+      - ${DB_PORT}:5432
