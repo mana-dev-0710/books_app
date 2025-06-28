@@ -3,6 +3,8 @@ services:
     container_name: app-container
     build:
       context: .
+    env_file:
+      - ${ENV_FILE:-.env} 
     volumes:
       - ./books_app:/work
       - /work/node_modules
