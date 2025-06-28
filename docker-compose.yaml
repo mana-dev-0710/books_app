@@ -4,7 +4,7 @@ services:
     build:
       context: .
     env_file:
-      - ${ENV_FILE:-.env} 
+      - .env
     volumes:
       - ./books_app:/work
       - /work/node_modules
@@ -16,6 +16,8 @@ services:
   db:
     image: postgres:15
     container_name: db-container
+    env_file:
+      - .env
     environment: 
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_USER}
