@@ -33,5 +33,3 @@ volumes:
   db_data:
   
 networks:
-  default-network:
-    external: true
