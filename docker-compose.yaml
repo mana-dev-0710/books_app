@@ -12,8 +12,7 @@ services:
     ports:
       - ${APP_PORT}:3000
       - ${STUDIO_PORT}:5555
-    networks:
-      - default-network
+      
   db:
     image: postgres:15
     container_name: db-container
@@ -26,8 +25,6 @@ services:
       - ${DB_PORT}:5432
     volumes:
       - db_data:/var/lib/postgresql
-    networks:
-      - default-network
 
 volumes:
   db_data:
